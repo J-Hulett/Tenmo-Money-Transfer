@@ -1,8 +1,11 @@
 package com.techelevator.tenmo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 public class AccountHolder {
+
     private String username;
     private int accountId;
     private BigDecimal balance;
@@ -42,4 +45,10 @@ public class AccountHolder {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    public String getHolderBalance(){
+
+        return "Your current account balance: $" + balance.toString();
+    }
+
 }

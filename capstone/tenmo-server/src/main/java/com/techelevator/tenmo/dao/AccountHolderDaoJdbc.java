@@ -36,11 +36,12 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
     }
 
     @Override
-    public AccountHolder getAccountHolderById(int accountId) {
+    public AccountHolder getAccountHolderByAccountId(int accountId) {
         AccountHolder accountHolder = new AccountHolder();
         String sql = "SELECT * " +
                 "FROM account " +
-                "JOIN tenmo_user on tenmo_user.user_id = account.user_id;";
+                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
+                "WHERE account_id = ?;";
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
 
@@ -50,11 +51,29 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         return accountHolder;
     }
 
+    @Override
+    public AccountHolder getAccountHolderByUserId(int userId) {
+        AccountHolder accountHolder = new AccountHolder();
+        String sql = "SELECT * " +
+                "FROM account " +
+                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
+                "WHERE tenmo_user.user_id = ?;";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
+
+        if (rowSet.next()) {
+            accountHolder = mapRowToAccountHolder(rowSet);
+        }
+        return accountHolder;
+    }
+
+
     public AccountHolder mapRowToAccountHolder(SqlRowSet rowSet) {
         AccountHolder accountHolder = new AccountHolder();
         accountHolder.setAccountId(rowSet.getInt("account_id"));
         accountHolder.setUsername(rowSet.getString("username"));
         accountHolder.setBalance(rowSet.getBigDecimal("balance"));
+        accountHolder.setUserId(rowSet.getInt("user_id"));
         return accountHolder;
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/holder")
 public class AccountHolderController {
 
     private AccountHolderDao accountHolderDao;
@@ -23,14 +23,23 @@ public class AccountHolderController {
         this.accountHolderDao = accountHolderDao;
     }
 
-    @RequestMapping(path = "/holder/{id}",method = RequestMethod.GET)
-    public AccountHolder getAccountHolderById(@PathVariable int id) {
-        return accountHolderDao.getAccountHolderById(id);
+    //  "/holder/account/{accountId}"
+    @RequestMapping(path = "/account/{accountId}",method = RequestMethod.GET)
+    public AccountHolder getAccountHolderByAccountId(@PathVariable int accountId) {
+        return accountHolderDao.getAccountHolderByAccountId(accountId);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public List<AccountHolder> getOtherAccountHoldersNotAtId(@PathVariable int id) {
-        return accountHolderDao.getListOfOtherAccountHolders(id);
+    // "/holder/{userId}"
+    @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
+    public AccountHolder getAccountHolderByUserId(@PathVariable int userId){
+        return accountHolderDao.getAccountHolderByUserId(userId);
+    }
+
+
+    // "/holder/contacts/{accountId}
+    @RequestMapping(path = "/contacts/{accountId}", method = RequestMethod.GET)
+    public List<AccountHolder> getListOfOtherAccountHoldersNotAtAccountId(@PathVariable int accountId) {
+        return accountHolderDao.getListOfOtherAccountHolders(accountId);
     }
 
 }

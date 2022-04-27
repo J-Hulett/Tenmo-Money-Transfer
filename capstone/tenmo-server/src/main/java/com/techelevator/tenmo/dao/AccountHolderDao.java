@@ -9,8 +9,8 @@ public interface AccountHolderDao {
     //all but the current users account for transfer menu
     List<AccountHolder> getListOfOtherAccountHolders(int accountId);
 
-    AccountHolder getAccountHolderById(int accountId);
+    AccountHolder getAccountHolderByAccountId(int accountId);
 
-
+    AccountHolder getAccountHolderByUserId(int userId);
 
 }
