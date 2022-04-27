@@ -11,4 +11,6 @@ public interface TransferDao {
 
     Transfer getTransferById(int transferID);
 
+    Transfer sendFunds(Transfer transfer);
+
 }

@@ -18,10 +18,16 @@ public class TransferDaoJdbc implements TransferDao{
     @Override
     public Transfer initiateTransfer(Transfer transfer) {
 
-
-
         return null;
     }
+
+    @Override
+    public boolean sendFunds(Transfer transfer) {
+        String sql = "INSERT INTO account (account_id, user_id, balance) VALUES (?,?,?,);";
+        String sql1 = // do transfer type and transfer status first//
+        return null;
+    }
+
 
     @Override
     public List<Transfer> listAllTransfersByAccount(int accountId) {
@@ -59,6 +65,8 @@ public class TransferDaoJdbc implements TransferDao{
 
         return transfer;
     }
+
+
 
     public Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
