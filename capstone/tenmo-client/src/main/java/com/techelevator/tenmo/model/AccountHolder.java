@@ -51,4 +51,8 @@ public class AccountHolder {
         return "Your current account balance: $" + balance.toString();
     }
 
+    public String getTransferContacts(){
+        return userId + "         " + username;
+    }
+
 }

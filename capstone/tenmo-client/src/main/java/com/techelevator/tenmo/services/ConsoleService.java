@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -47,6 +48,14 @@ public class ConsoleService {
         System.out.println();
     }
 
+    public void printTransferListBanner() {
+        System.out.println("-------------------------------------------");
+        System.out.println("User");
+        System.out.println("ID          Name");
+        System.out.println("-------------------------------------------");
+    }
+
+
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");
         String password = promptForString("Password: ");
@@ -56,6 +65,22 @@ public class ConsoleService {
     public String promptForString(String prompt) {
         System.out.print(prompt);
         return scanner.nextLine();
+    }
+
+    public void listContacts(AccountHolder[] contacts) {
+        printTransferListBanner();
+        if (contacts.length > 0) {
+            for (AccountHolder accountHolder : contacts) {
+                System.out.println(accountHolder.getTransferContacts());
+            }
+        } else {
+            System.out.println("You dont have any contacts");
+        }
+        System.out.println("---------");
+        System.out.println();
+        promptForUserId();
+        promptForTransfer();
+
     }
 
     public int promptForInt(String prompt) {
@@ -69,6 +94,16 @@ public class ConsoleService {
         }
     }
 
+    public void promptForTransfer() {
+        String amountToTransfer = "Enter amount:";
+        promptForInt(amountToTransfer);
+    }
+
+    public void promptForUserId() {
+        String enterId = "Enter ID of user you are sending to (0 to cancel):";
+        promptForInt(enterId);
+    }
+
     public BigDecimal promptForBigDecimal(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -80,7 +115,8 @@ public class ConsoleService {
         }
     }
 
-    public void printBalance(AccountHolder accountHolder){
+    public String printBalance(int userId, AccountHolderService accountHolderService) {
+        return accountHolderService.getAccountHolderByUserId(userId).getHolderBalance();
 
     }
 

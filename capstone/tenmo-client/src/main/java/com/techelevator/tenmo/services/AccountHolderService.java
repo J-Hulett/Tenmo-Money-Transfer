@@ -10,6 +10,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 public class AccountHolderService {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -32,6 +34,19 @@ public class AccountHolderService {
             BasicLogger.log(e.getMessage());
         }
         return accountHolder;
+    }
+
+    public AccountHolder[] getContactList(int accountId) {
+       AccountHolder[] accountHolders = null;
+       try {
+           ResponseEntity<AccountHolder[]> response =
+                   restTemplate.exchange(API_BASE_URL + "holder/contacts/" + accountId, HttpMethod.GET,
+                          makeAuthEntity(),AccountHolder[].class);
+           accountHolders = response.getBody();
+       } catch (RestClientResponseException | ResourceAccessException e) {
+           BasicLogger.log(e.getMessage());
+       }
+       return accountHolders;
     }
 
     public AccountHolder getAccountHolderByUserId(int userId){

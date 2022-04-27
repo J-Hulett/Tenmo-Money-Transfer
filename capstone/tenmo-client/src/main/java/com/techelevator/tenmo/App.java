@@ -1,5 +1,6 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountHolderService;
@@ -90,10 +91,9 @@ public class App {
             consoleService.pause();
         }
     }
-
 	private void viewCurrentBalance() {
       int userId = Math.toIntExact(currentUser.getUser().getId());
-       System.out.println(accountHolderService.getAccountHolderByUserId(userId).getHolderBalance());
+       System.out.println(consoleService.printBalance(userId,accountHolderService));
 	}
 
 	private void viewTransferHistory() {
@@ -107,6 +107,10 @@ public class App {
 	}
 
 	private void sendBucks() {
+        int userId = Math.toIntExact(currentUser.getUser().getId());
+        int accountId = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
+        AccountHolder[] test = accountHolderService.getContactList(accountId);
+        consoleService.listContacts(test);
 		// TODO Auto-generated method stub
 		
 	}
