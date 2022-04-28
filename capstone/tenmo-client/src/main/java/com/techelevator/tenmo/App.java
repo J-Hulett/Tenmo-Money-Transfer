@@ -2,10 +2,14 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountHolderService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.TransferService;
+
+import java.math.BigDecimal;
 
 public class App {
 
@@ -14,8 +18,11 @@ public class App {
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
     private final AccountHolderService accountHolderService = new AccountHolderService();
+    private final TransferService transferService = new TransferService();
 
     private AuthenticatedUser currentUser;
+
+    int currentUserId = 0;
 
 
 
@@ -62,6 +69,8 @@ public class App {
         currentUser = authenticationService.login(credentials);
         if(currentUser.getToken() != null){
             accountHolderService.setAuthToken(currentUser.getToken());
+            transferService.setAuthToken(currentUser.getToken());
+            currentUserId = Math.toIntExact(currentUser.getUser().getId());
         }
         if (currentUser == null) {
             consoleService.printErrorMessage();
@@ -92,8 +101,7 @@ public class App {
         }
     }
 	private void viewCurrentBalance() {
-      int userId = Math.toIntExact(currentUser.getUser().getId());
-       System.out.println(consoleService.printBalance(userId,accountHolderService));
+       System.out.println(consoleService.printBalance(currentUserId,accountHolderService));
 	}
 
 	private void viewTransferHistory() {
@@ -107,11 +115,13 @@ public class App {
 	}
 
 	private void sendBucks() {
-        int userId = Math.toIntExact(currentUser.getUser().getId());
-        int accountId = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
-        AccountHolder[] test = accountHolderService.getContactList(accountId);
-        consoleService.listContacts(test);
-		// TODO Auto-generated method stub
+        consoleService.listContacts(accountHolderService.getContactList(currentUserId));
+        int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
+        BigDecimal transferAmount = consoleService.promptForTransferAmount();
+        Transfer returnTransfer = transferService.sendingFunds(transferAmount,userIdToSend,currentUserId);
+        if (returnTransfer == null) {
+            consoleService.printErrorMessage();
+        }
 		
 	}
 

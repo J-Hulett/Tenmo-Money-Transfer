@@ -18,15 +18,15 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
     }
 
     @Override
-    public List<AccountHolder> getListOfOtherAccountHolders(int accountId) {
+    public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) {
         List<AccountHolder> accountHolders = new ArrayList<>();
 
         String sql = "SELECT * " +
                 "FROM account " +
                 "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
-                "WHERE account_id != ?;";
+                "WHERE account.user_id != ?;";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
 
         while (rowSet.next()) {
             AccountHolder accountHolder = mapRowToAccountHolder(rowSet);
@@ -35,21 +35,21 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         return accountHolders;
     }
 
-    @Override
-    public AccountHolder getAccountHolderByAccountId(int accountId) {
-        AccountHolder accountHolder = new AccountHolder();
-        String sql = "SELECT * " +
-                "FROM account " +
-                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
-                "WHERE account_id = ?;";
-
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
-
-        if (rowSet.next()) {
-            accountHolder = mapRowToAccountHolder(rowSet);
-        }
-        return accountHolder;
-    }
+//    @Override
+//    public AccountHolder getAccountHolderByAccountId(int accountId) {
+//        AccountHolder accountHolder = new AccountHolder();
+//        String sql = "SELECT * " +
+//                "FROM account " +
+//                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
+//                "WHERE account_id = ?;";
+//
+//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
+//
+//        if (rowSet.next()) {
+//            accountHolder = mapRowToAccountHolder(rowSet);
+//        }
+//        return accountHolder;
+//    }
 
     @Override
     public AccountHolder getAccountHolderByUserId(int userId) {

@@ -23,24 +23,24 @@ public class AccountHolderService {
         this.authToken = authToken;
     }
 
-    public AccountHolder getAccountHolderByAccountId(int accountId){
-        AccountHolder accountHolder = null;
-        try{
-            ResponseEntity<AccountHolder> response =
-                    restTemplate.exchange(API_BASE_URL + "holder/account/" + accountId, HttpMethod.GET, makeAuthEntity(),
-                            AccountHolder.class);
-            accountHolder = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e){
-            BasicLogger.log(e.getMessage());
-        }
-        return accountHolder;
-    }
+//    public AccountHolder getAccountHolderByAccountId(int accountId){
+//        AccountHolder accountHolder = null;
+//        try{
+//            ResponseEntity<AccountHolder> response =
+//                    restTemplate.exchange(API_BASE_URL + "holder/account/" + accountId, HttpMethod.GET, makeAuthEntity(),
+//                            AccountHolder.class);
+//            accountHolder = response.getBody();
+//        } catch (RestClientResponseException | ResourceAccessException e){
+//            BasicLogger.log(e.getMessage());
+//        }
+//        return accountHolder;
+//    }
 
-    public AccountHolder[] getContactList(int accountId) {
+    public AccountHolder[] getContactList(int userId) {
        AccountHolder[] accountHolders = null;
        try {
            ResponseEntity<AccountHolder[]> response =
-                   restTemplate.exchange(API_BASE_URL + "holder/contacts/" + accountId, HttpMethod.GET,
+                   restTemplate.exchange(API_BASE_URL + "holder/contacts/" + userId, HttpMethod.GET,
                           makeAuthEntity(),AccountHolder[].class);
            accountHolders = response.getBody();
        } catch (RestClientResponseException | ResourceAccessException e) {

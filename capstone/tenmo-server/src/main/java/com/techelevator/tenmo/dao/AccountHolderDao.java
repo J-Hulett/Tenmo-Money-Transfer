@@ -7,9 +7,9 @@ import java.util.List;
 public interface AccountHolderDao {
 
     //all but the current users account for transfer menu
-    List<AccountHolder> getListOfOtherAccountHolders(int accountId);
+    List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId);
 
-    AccountHolder getAccountHolderByAccountId(int accountId);
+//    AccountHolder getAccountHolderByAccountId(int accountId);
 
     AccountHolder getAccountHolderByUserId(int userId);
 

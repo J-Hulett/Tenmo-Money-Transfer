@@ -78,10 +78,10 @@ public class ConsoleService {
         }
         System.out.println("---------");
         System.out.println();
-        promptForUserId();
-        promptForTransfer();
-
+//        promptForUserId();
+//        promptForTransfer();
     }
+
 
     public int promptForInt(String prompt) {
         System.out.print(prompt);
@@ -94,14 +94,14 @@ public class ConsoleService {
         }
     }
 
-    public void promptForTransfer() {
+    public BigDecimal promptForTransferAmount() {
         String amountToTransfer = "Enter amount:";
-        promptForInt(amountToTransfer);
+        return promptForBigDecimal(amountToTransfer);
     }
 
-    public void promptForUserId() {
+    public int promptForUserIdToSendMoneyTo() {
         String enterId = "Enter ID of user you are sending to (0 to cancel):";
-        promptForInt(enterId);
+        return promptForInt(enterId);
     }
 
     public BigDecimal promptForBigDecimal(String prompt) {

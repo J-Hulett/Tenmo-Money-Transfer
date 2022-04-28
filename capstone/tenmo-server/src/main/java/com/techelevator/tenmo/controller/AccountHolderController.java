@@ -23,11 +23,12 @@ public class AccountHolderController {
         this.accountHolderDao = accountHolderDao;
     }
 
-    //  "/holder/account/{accountId}"
-    @RequestMapping(path = "/account/{accountId}",method = RequestMethod.GET)
-    public AccountHolder getAccountHolderByAccountId(@PathVariable int accountId) {
-        return accountHolderDao.getAccountHolderByAccountId(accountId);
-    }
+//
+//    //  "/holder/account/{accountId}"
+//    @RequestMapping(path = "/account/{accountId}",method = RequestMethod.GET)
+//    public AccountHolder getAccountHolderByAccountId(@PathVariable int accountId) {
+//        return accountHolderDao.getAccountHolderByAccountId(accountId);
+//    }
 
     // "/holder/{userId}"
     @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
@@ -36,10 +37,10 @@ public class AccountHolderController {
     }
 
 
-    // "/holder/contacts/{accountId}
-    @RequestMapping(path = "/contacts/{accountId}", method = RequestMethod.GET)
-    public List<AccountHolder> getListOfOtherAccountHoldersNotAtAccountId(@PathVariable int accountId) {
-        return accountHolderDao.getListOfOtherAccountHolders(accountId);
+    // "/holder/contacts/{userId}
+    @RequestMapping(path = "/contacts/{userId}", method = RequestMethod.GET)
+    public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(@PathVariable int userId) {
+        return accountHolderDao.getListOfOtherAccountHoldersByUserId(userId);
     }
 
 }
