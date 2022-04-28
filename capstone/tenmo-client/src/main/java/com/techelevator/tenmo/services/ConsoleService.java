@@ -1,7 +1,9 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.App;
 import com.techelevator.tenmo.model.AccountHolder;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
@@ -76,12 +78,24 @@ public class ConsoleService {
         } else {
             System.out.println("You dont have any contacts");
         }
-        System.out.println("---------");
+        System.out.println("-------------------------------------------");
         System.out.println();
-//        promptForUserId();
-//        promptForTransfer();
     }
 
+    public void printTransferList(List<Transfer> transfer){
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID          From/To                 Amount");
+        System.out.println("-------------------------------------------");
+        for (List<Transfer> transfer: transfers) {
+            System.out.println(  );
+        }
+
+    }
+
+//    public void transferComplete(TransferService transferService) {
+//        if (transferService.sendingFunds())
+//    }
 
     public int promptForInt(String prompt) {
         System.out.print(prompt);

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class TransferDaoJdbc implements TransferDao{
 
 
     @Override
-    public List<Transfer> listAllTransfersByAccount(int accountId) {
+    public List<Transfer> listAllTransfersByAccount(int userId, AccountHolderDao accountHolderDao) {
         List<Transfer> transferList = new ArrayList<>();
 
         String sql = "SELECT * " +
@@ -44,7 +45,7 @@ public class TransferDaoJdbc implements TransferDao{
                 "JOIN transfer_type on transfer.transfer_type_id = transfer_type.transfer_type_id " +
                 "WHERE account_from OR account_to = ?;";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountHolderDao.getAccountHolderByUserId(userId).getAccountId());
 
         while (rowSet.next()) {
            Transfer transfer = mapRowToTransfer(rowSet);

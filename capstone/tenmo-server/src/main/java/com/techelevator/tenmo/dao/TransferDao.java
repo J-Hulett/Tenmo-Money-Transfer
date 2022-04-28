@@ -7,7 +7,7 @@ import java.util.List;
 public interface TransferDao {
     Transfer initiateTransfer(Transfer transfer);
 
-    List<Transfer> listAllTransfersByAccount(int accountId);
+    List<Transfer> listAllTransfersByAccount(int accountId, AccountHolderDao accountHolderDao);
 
     Transfer getTransferById(int transferID);
 

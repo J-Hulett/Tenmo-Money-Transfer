@@ -8,6 +8,8 @@ import com.techelevator.tenmo.services.AccountHolderService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.util.BasicLogger;
+import com.techelevator.util.TransferNotAllowedException;
 
 import java.math.BigDecimal;
 
@@ -117,11 +119,17 @@ public class App {
         consoleService.listContacts(accountHolderService.getContactList(userId));
         int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
-        boolean success = transferService.sendingFunds(transferAmount,userIdToSend,userId);
-        if (!success) {
-            consoleService.printErrorMessage();
-        }
-		
+
+       try {
+           boolean success = transferService.sendingFunds(transferAmount,userIdToSend,userId);
+           if (!success) {
+               throw new TransferNotAllowedException();
+           }
+       } catch (TransferNotAllowedException e) {
+           BasicLogger.log(e.getMessage());
+           consoleService.printErrorMessage();
+       }
+
 	}
 
 	private void requestBucks() {

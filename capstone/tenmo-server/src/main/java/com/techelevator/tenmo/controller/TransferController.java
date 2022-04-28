@@ -22,7 +22,7 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
-    public boolean sendFunds(@Valid @RequestBody Transfer transfer){
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer) throws InvalidTransferException{
         return transferDao.sendFunds(transfer);
     }
 

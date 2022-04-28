@@ -33,12 +33,11 @@ public class TransferService {
         accountHolderService.setAuthToken(authToken);
          BigDecimal currentUserBalance = accountHolderService.getAccountHolderByUserId(currentUserId).getBalance();
          int accountToId = accountHolderService.getAccountHolderByUserId(userIdToSend).getAccountId();
-         int accountfromId = accountHolderService.getAccountHolderByUserId(currentUserId).getAccountId();
+         int accountFromId = accountHolderService.getAccountHolderByUserId(currentUserId).getAccountId();
          boolean hasEnoughMoney = (currentUserBalance.compareTo(transferAmount) != -1);
          boolean notSameAccount = (userIdToSend != currentUserId);
          boolean success = false;
          Transfer transfer = new Transfer();
-         Transfer returnTransfer = null;
          if (hasEnoughMoney && notSameAccount && accountExists(accountHolderService.getAccountHolderByUserId(userIdToSend))) {
              transfer.setTransferAmount(transferAmount);
              transfer.setTransferTypeId(2);
@@ -46,12 +45,11 @@ public class TransferService {
              transfer.setTransferStatusId(2);
              transfer.setTransferStatus(getTransferStatusAsString(2));
              transfer.setAccountToId(accountToId);
-             transfer.setAccountFromId(accountfromId);
+             transfer.setAccountFromId(accountFromId);
              transfer.setTransferAmount(transferAmount);
              HttpEntity<Transfer> entity = makeTransferEntity(transfer);
              try {
-                 returnTransfer = restTemplate.postForObject(API_BASE_URL + "transfer/send",entity,Transfer.class);
-                 success = true;
+                 success = restTemplate.postForObject(API_BASE_URL + "transfer/send",entity, boolean.class);
              } catch (RestClientResponseException | ResourceAccessException e) {
                  BasicLogger.log(e.getMessage());
              }

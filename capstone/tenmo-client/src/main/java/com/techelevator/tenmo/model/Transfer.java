@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.model;
 
+import com.techelevator.tenmo.services.AccountHolderService;
+
 import java.math.BigDecimal;
 
 public class Transfer {
@@ -14,6 +16,16 @@ public class Transfer {
     private BigDecimal transferAmount;
 
     public Transfer() {
+    }
+
+    public String viewTransferToString(int userId, AccountHolderService accountHolderService) {
+        int currentUser = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
+        String toOrFrom = (accountFromId == currentUser) ? "To: " : "From: ";
+
+        String nameOnAccount = accountHolderService.getAccountHolderByUserId(userId).getUsername();
+        String thinkofname = (nameOnAccount == )
+
+        return transferId + "          " + toOrFrom + " " + + "          $ " + transferAmount;
     }
 
     public int getTransferTypeId() {
