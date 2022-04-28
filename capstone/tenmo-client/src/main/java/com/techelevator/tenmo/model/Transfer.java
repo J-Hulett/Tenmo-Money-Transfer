@@ -3,6 +3,7 @@ package com.techelevator.tenmo.model;
 import com.techelevator.tenmo.services.AccountHolderService;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Transfer {
 
@@ -18,14 +19,32 @@ public class Transfer {
     public Transfer() {
     }
 
+    public String goThroughUsernames(AccountHolder[] contacts, String toOrFrom) {
+        //if its a from transaction or to transaction
+        String usernameToReturn = null;
+        for (AccountHolder accountHolder : contacts) {
+            if (toOrFrom.equals("From")) {
+                if (accountHolder.getAccountId() == accountFromId) {
+                    usernameToReturn = accountHolder.getUsername();
+                }
+            } else {
+                if (accountHolder.getAccountId() == accountToId) {
+                    usernameToReturn = accountHolder.getUsername();
+                }
+            }
+        }
+        //if its a from transaction, get accountFromIdsUsername
+        return usernameToReturn;
+        //if its a to transaction, get accountsToIdsUsername
+    }
+
     public String viewTransferToString(int userId, AccountHolderService accountHolderService) {
         int currentUser = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
-        String toOrFrom = (accountFromId == currentUser) ? "To: " : "From: ";
+        String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
 
-        String nameOnAccount = accountHolderService.getAccountHolderByUserId(userId).getUsername();
-        String thinkofname = (nameOnAccount == )
+        String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(userId),toOrFrom);
 
-        return transferId + "          " + toOrFrom + " " + + "          $ " + transferAmount;
+        return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
     }
 
     public int getTransferTypeId() {

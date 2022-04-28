@@ -25,7 +25,6 @@ public class App {
     private AuthenticatedUser currentUser;
 
 
-
     public static void main(String[] args) {
         App app = new App();
         app.run();
@@ -38,6 +37,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -67,7 +67,7 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
-        if(currentUser.getToken() != null){
+        if (currentUser.getToken() != null) {
             accountHolderService.setAuthToken(currentUser.getToken());
             transferService.setAuthToken(currentUser.getToken());
         }
@@ -99,42 +99,45 @@ public class App {
             consoleService.pause();
         }
     }
-	private void viewCurrentBalance() {
+
+    private void viewCurrentBalance() {
         int userId = Math.toIntExact(currentUser.getUser().getId());
-       System.out.println(consoleService.printBalance(userId,accountHolderService));
-	}
+        System.out.println(consoleService.printBalance(userId, accountHolderService));
+    }
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void viewTransferHistory() {
+        int userId = Math.toIntExact(currentUser.getUser().getId());
+        consoleService.printTransferList(transferService.getTransferList(), userId, accountHolderService);
+        // TODO Auto-generated method stub
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	private void sendBucks() {
+    private void viewPendingRequests() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void sendBucks() {
         int userId = Math.toIntExact(currentUser.getUser().getId());
         consoleService.listContacts(accountHolderService.getContactList(userId));
         int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
 
-       try {
-           boolean success = transferService.sendingFunds(transferAmount,userIdToSend,userId);
-           if (!success) {
-               throw new TransferNotAllowedException();
-           }
-       } catch (TransferNotAllowedException e) {
-           BasicLogger.log(e.getMessage());
-           consoleService.printErrorMessage();
-       }
+        try {
+            boolean success = transferService.sendingFunds(transferAmount, userIdToSend, userId);
+            if (!success) {
+                throw new TransferNotAllowedException();
+            }
+        } catch (TransferNotAllowedException e) {
+            BasicLogger.log(e.getMessage());
+            consoleService.printErrorMessage();
+        }
 
-	}
+    }
 
-	private void requestBucks() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void requestBucks() {
+        // TODO Auto-generated method stub
+
+    }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
@@ -24,6 +25,11 @@ public class TransferController {
     @RequestMapping(path = "/send", method = RequestMethod.POST)
     public boolean sendFunds(@Valid @RequestBody Transfer transfer) throws InvalidTransferException{
         return transferDao.sendFunds(transfer);
+    }
+
+    @RequestMapping(path = "/list", method = RequestMethod.GET)
+    public List<Transfer> getListOfTransfers(){
+        return transferDao.listAllTransfers();
     }
 
 
