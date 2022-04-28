@@ -22,8 +22,6 @@ public class App {
 
     private AuthenticatedUser currentUser;
 
-    int currentUserId = 0;
-
 
 
     public static void main(String[] args) {
@@ -70,7 +68,6 @@ public class App {
         if(currentUser.getToken() != null){
             accountHolderService.setAuthToken(currentUser.getToken());
             transferService.setAuthToken(currentUser.getToken());
-            currentUserId = Math.toIntExact(currentUser.getUser().getId());
         }
         if (currentUser == null) {
             consoleService.printErrorMessage();
@@ -101,7 +98,8 @@ public class App {
         }
     }
 	private void viewCurrentBalance() {
-       System.out.println(consoleService.printBalance(currentUserId,accountHolderService));
+        int userId = Math.toIntExact(currentUser.getUser().getId());
+       System.out.println(consoleService.printBalance(userId,accountHolderService));
 	}
 
 	private void viewTransferHistory() {
@@ -115,11 +113,12 @@ public class App {
 	}
 
 	private void sendBucks() {
-        consoleService.listContacts(accountHolderService.getContactList(currentUserId));
+        int userId = Math.toIntExact(currentUser.getUser().getId());
+        consoleService.listContacts(accountHolderService.getContactList(userId));
         int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
-        Transfer returnTransfer = transferService.sendingFunds(transferAmount,userIdToSend,currentUserId);
-        if (returnTransfer == null) {
+        boolean success = transferService.sendingFunds(transferAmount,userIdToSend,userId);
+        if (!success) {
             consoleService.printErrorMessage();
         }
 		

@@ -29,10 +29,14 @@ public class TransferService {
         this.API_BASE_URL = AccountHolderService.API_BASE_URL;
     }
 
-    public Transfer sendingFunds(BigDecimal transferAmount, int userIdToSend, int currentUserId){
+    public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend, int currentUserId){
+        accountHolderService.setAuthToken(authToken);
          BigDecimal currentUserBalance = accountHolderService.getAccountHolderByUserId(currentUserId).getBalance();
+         int accountToId = accountHolderService.getAccountHolderByUserId(userIdToSend).getAccountId();
+         int accountfromId = accountHolderService.getAccountHolderByUserId(currentUserId).getAccountId();
          boolean hasEnoughMoney = (currentUserBalance.compareTo(transferAmount) != -1);
          boolean notSameAccount = (userIdToSend != currentUserId);
+         boolean success = false;
          Transfer transfer = new Transfer();
          Transfer returnTransfer = null;
          if (hasEnoughMoney && notSameAccount && accountExists(accountHolderService.getAccountHolderByUserId(userIdToSend))) {
@@ -41,18 +45,19 @@ public class TransferService {
              transfer.setTransferType(getTransferTypeAsString(2));
              transfer.setTransferStatusId(2);
              transfer.setTransferStatus(getTransferStatusAsString(2));
-             transfer.setAccountToId(userIdToSend);
-             transfer.setAccountFromId(currentUserId);
+             transfer.setAccountToId(accountToId);
+             transfer.setAccountFromId(accountfromId);
              transfer.setTransferAmount(transferAmount);
              HttpEntity<Transfer> entity = makeTransferEntity(transfer);
              try {
                  returnTransfer = restTemplate.postForObject(API_BASE_URL + "transfer/send",entity,Transfer.class);
+                 success = true;
              } catch (RestClientResponseException | ResourceAccessException e) {
                  BasicLogger.log(e.getMessage());
              }
 
          }
-        return returnTransfer;
+        return success;
     }
 
     public boolean accountExists(AccountHolder accountHolder) {

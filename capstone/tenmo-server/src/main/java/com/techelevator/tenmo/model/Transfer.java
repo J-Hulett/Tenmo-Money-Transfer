@@ -9,18 +9,14 @@ public class Transfer {
 
     private int transferId;
     @NotNull
-    @NotBlank
     private int transferTypeId;
     private String transferType;
     @NotNull
-    @NotBlank
     private int transferStatusId;
     private String transferStatus;
     @NotNull
-    @NotBlank
     private int accountToId;
     @NotNull
-    @NotBlank
     private int accountFromId;
     @Min(0)
     private BigDecimal transferAmount;

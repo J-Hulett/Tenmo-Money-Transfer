@@ -60,7 +60,6 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
                 "WHERE tenmo_user.user_id = ?;";
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
-
         if (rowSet.next()) {
             accountHolder = mapRowToAccountHolder(rowSet);
         }
