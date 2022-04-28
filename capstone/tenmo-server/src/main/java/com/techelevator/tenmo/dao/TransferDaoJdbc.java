@@ -39,10 +39,13 @@ public class TransferDaoJdbc implements TransferDao{
     public List<Transfer> listAllTransfers() {
         List<Transfer> transferList = new ArrayList<>();
 
-        String sql = "SELECT * " +
-                "FROM transfer " +
-                "JOIN transfer_status on transfer_status.transfer_status_id = transfer.transfer_status_id " +
-                "JOIN transfer_type on transfer.transfer_type_id = transfer_type.transfer_type_id; ";
+        String sql = "SELECT * FROM transfer JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id;";
+
+//        String sql = "SELECT * " +
+//                "FROM transfer " +
+//                "JOIN transfer_status on transfer_status.transfer_status_id = transfer.transfer_status_id " +
+//                "JOIN transfer_type on transfer.transfer_type_id = transfer_type.transfer_type_id " +
+//                "WHERE transfer.transfer_status_id = ?;";
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
 
@@ -81,8 +84,8 @@ public class TransferDaoJdbc implements TransferDao{
         transfer.setAccountToId(rowSet.getInt("account_to"));
         transfer.setAccountFromId(rowSet.getInt("account_from"));
         transfer.setTransferAmount(rowSet.getBigDecimal("amount"));
-        transfer.setTransferTypeId(rowSet.getInt("transfer.transfer_type_id"));
-        transfer.setTransferStatusId(rowSet.getInt("transfer.transfer_status_id"));
+        transfer.setTransferTypeId(rowSet.getInt("transfer_type_id"));
+        transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         return transfer;
     }
 

@@ -88,7 +88,7 @@ public class ConsoleService {
         System.out.println("ID          From/To                 Amount");
         System.out.println("-------------------------------------------");
         for (Transfer transfer: transfers) {
-            transfer.viewTransferToString(userId,accountHolderService);
+            System.out.println(transfer.viewTransferToString(userId,accountHolderService));
         }
     }
 

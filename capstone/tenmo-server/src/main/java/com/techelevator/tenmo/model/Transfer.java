@@ -10,9 +10,11 @@ public class Transfer {
     private int transferId;
     @NotNull
     private int transferTypeId;
+
     private String transferType;
     @NotNull
     private int transferStatusId;
+
     private String transferStatus;
     @NotNull
     private int accountToId;
