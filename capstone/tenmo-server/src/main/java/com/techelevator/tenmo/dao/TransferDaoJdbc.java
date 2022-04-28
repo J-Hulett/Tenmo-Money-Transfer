@@ -23,9 +23,14 @@ public class TransferDaoJdbc implements TransferDao{
 
     @Override
     public boolean sendFunds(Transfer transfer) {
-        String sql = "INSERT INTO account (account_id, user_id, balance) VALUES (?,?,?,);";
-        String sql1 = // do transfer type and transfer status first//
-        return null;
+        String sql = "BEGIN TRANSACTION; " +
+                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?,?,?,?,?); " +
+                "UPDATE account SET balance = balance - ? WHERE account_id = ?; " +
+                "UPDATE account SET balance = balance + ? WHERE account_id = ?; " +
+                "COMMIT;";
+        return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFromId(),
+                transfer.getAccountToId(), transfer.getTransferAmount(), transfer.getTransferAmount(), transfer.getAccountFromId(),
+                transfer.getTransferAmount(), transfer.getAccountToId()) == 0;
     }
 
 
@@ -76,6 +81,8 @@ public class TransferDaoJdbc implements TransferDao{
         transfer.setAccountToId(rowSet.getInt("account_to"));
         transfer.setAccountFromId(rowSet.getInt("account_from"));
         transfer.setTransferAmount(rowSet.getBigDecimal("amount"));
+        transfer.setTransferTypeId(rowSet.getInt("transfer.transfer_type_id"));
+        transfer.setTransferStatusId(rowSet.getInt("transfer.transfer_status_id"));
         return transfer;
     }
 

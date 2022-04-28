@@ -1,9 +1,13 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.exceptions.InvalidTransferException;
+import com.techelevator.tenmo.model.Transfer;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
@@ -16,6 +20,11 @@ public class TransferController {
         this.transferDao = transferDao;
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(path = "/send", method = RequestMethod.POST)
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer) throws InvalidTransferException {
+        return transferDao.sendFunds(transfer);
+    }
 
 
 }

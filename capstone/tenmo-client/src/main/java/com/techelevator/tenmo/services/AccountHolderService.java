@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AccountHolderService {
 
-    private static final String API_BASE_URL = "http://localhost:8080/";
+    public static final String API_BASE_URL = "http://localhost:8080/";
     private final RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
@@ -63,7 +63,7 @@ public class AccountHolderService {
     }
 
 
-    private HttpEntity<Void> makeAuthEntity(){
+    public HttpEntity<Void> makeAuthEntity(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
