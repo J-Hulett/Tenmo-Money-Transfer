@@ -16,6 +16,12 @@ public class TransferService {
     AccountHolderService accountHolderService = new AccountHolderService();
     String API_BASE_URL;
     private final RestTemplate restTemplate = new RestTemplate();
+    public static final int TYPE_REQUEST = 1;
+    public static final int TYPE_SEND = 2;
+    public static final int STATUS_PENDING = 1;
+    public static final int STATUS_APPROVED = 2;
+    public static final int STATUS_REJECTED = 3;
+
 
     private String authToken = null;
 
@@ -36,10 +42,10 @@ public class TransferService {
 
         boolean success = false;
         Transfer transfer = new Transfer();
-        transfer.setTransferTypeId(2);
-        transfer.setTransferType(getTransferTypeAsString(2));
-        transfer.setTransferStatusId(2);
-        transfer.setTransferStatus(getTransferStatusAsString(2));
+        transfer.setTransferTypeId(TYPE_SEND);
+        transfer.setTransferType(getTransferTypeAsString(TYPE_SEND));
+        transfer.setTransferStatusId(STATUS_PENDING);
+        transfer.setTransferStatus(getTransferStatusAsString(STATUS_PENDING));
         transfer.setAccountToId(accountToId);
         transfer.setTransferAmount(transferAmount);
         HttpEntity<Transfer> entity = makeTransferEntity(transfer);

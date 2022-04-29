@@ -22,6 +22,11 @@ public class TransferController {
     private TransferDao transferDao;
     private AccountHolderDao accountHolderDao;
     private JdbcUserDao jdbcUserDao;
+    public static final int TYPE_REQUEST = 1;
+    public static final int TYPE_SEND = 2;
+    public static final int STATUS_PENDING = 1;
+    public static final int STATUS_APPROVED = 2;
+    public static final int STATUS_REJECTED = 3;
 
     public TransferController(TransferDao transferDao, AccountHolderDao accountHolderDao, JdbcUserDao jdbcUserDao) {
         this.accountHolderDao = accountHolderDao;
@@ -37,10 +42,22 @@ public class TransferController {
                 && notSameAccount(transfer, currentAccountHolder(principal))
                 && isAccount(transfer)) {
             transfer.setAccountFromId(currentAccountHolder(principal).getAccountId());
+            transfer.setTransferStatusId(STATUS_APPROVED);
+            transfer.setTransferStatus(getTransferStatusAsString(STATUS_APPROVED));
             transferDao.sendFunds(transfer);
             success = true;
         }
         return success;
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/send/request", method = RequestMethod.POST)
+    public boolean sendRequest(@Valid @RequestBody Transfer transfer) {
+        transfer.setTransferTypeId(TYPE_REQUEST);
+        transfer.setTransferType(getTransferTypeAsString(TYPE_REQUEST));
+        transfer.setTransferStatusId(STATUS_PENDING);
+        transfer.setTransferStatus(getTransferStatusAsString(STATUS_PENDING));
+        return transferDao.initiateTransfer(transfer);
     }
 
     @RequestMapping(path = "/list", method = RequestMethod.GET)
@@ -67,5 +84,21 @@ public class TransferController {
         return accountHolderDao.getAccountHolderByAccountId(transfer.getAccountToId()) != null;
     }
 
+    public String getTransferStatusAsString(int statusId) {  //might need another model
+        if (statusId == 1) {
+            return "Pending";
+        } else if (statusId == 2) {
+            return "Approved";
+        } else {
+            return "Rejected";
+        }
+    }
 
+    public String getTransferTypeAsString(int typeId) {
+        if (typeId == 1) {
+            return "Request";
+        } else {
+            return "Send";
+        }
+    }
 }

@@ -7,14 +7,13 @@ import java.security.Principal;
 import java.util.List;
 
 public interface TransferDao {
-    Transfer initiateTransfer(Transfer transfer);
+    boolean initiateTransfer(Transfer transfer);
 
     List<Transfer> listAllTransfers(int accountId);
 
     Transfer getTransferById(int transferID);
 
     boolean sendFunds(Transfer transfer) throws InvalidTransferException;
-
 
 
 }

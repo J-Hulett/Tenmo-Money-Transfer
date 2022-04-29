@@ -76,7 +76,7 @@ public class AccountHolderService {
     }
 
     public String getUsernameByAccountId(int accountId) {
-        String username = null;
+        String username = getCurrentAccountHolder().getUsername();
         for (AccountHolder accountHolder : getContactList()) {
             if (accountHolder.getAccountId() == accountId) {
                 username = accountHolder.getUsername();

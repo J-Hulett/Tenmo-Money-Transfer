@@ -23,9 +23,11 @@ public class TransferDaoJdbc implements TransferDao {
 
 
     @Override
-    public Transfer initiateTransfer(Transfer transfer) {
-
-        return null;
+    public boolean initiateTransfer(Transfer transfer) {
+        String sql = "BEGIN TRANSACTION; " +
+                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?,?,?,?,?);";
+        return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFromId(),
+                transfer.getAccountToId(), transfer.getTransferAmount()) == 0;
     }
 
     @Override
@@ -48,7 +50,6 @@ public class TransferDaoJdbc implements TransferDao {
         String sql = "SELECT * FROM transfer JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
                 "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id "
                 + "WHERE account_from = ? OR account_to = ?;";
-
 
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, accountId);
