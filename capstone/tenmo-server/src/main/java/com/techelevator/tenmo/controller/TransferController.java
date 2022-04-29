@@ -1,13 +1,17 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.AccountHolderDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
+import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
@@ -16,14 +20,25 @@ import java.util.List;
 public class TransferController {
 
     private TransferDao transferDao;
+    private AccountHolderDao accountHolderDao;
+    private JdbcUserDao jdbcUserDao;
 
-    public TransferController(TransferDao transferDao) {
+    public TransferController(TransferDao transferDao, AccountHolderDao accountHolderDao, JdbcUserDao jdbcUserDao) {
+        this.accountHolderDao = accountHolderDao;
         this.transferDao = transferDao;
+        this.jdbcUserDao = jdbcUserDao;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
-    public boolean sendFunds(@Valid @RequestBody Transfer transfer) throws InvalidTransferException{
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException{
+
+        if(hasEnoughMoney(transfer, currentAccountHolder(principal))
+                && notSameAccount(transfer, currentAccountHolder(principal))
+                && isAccount(transfer)){
+            transfer.setAccountFromId(currentAccountHolder(principal).getAccountId());
+        }
+
         return transferDao.sendFunds(transfer);
     }
 
@@ -32,5 +47,22 @@ public class TransferController {
         return transferDao.listAllTransfers();
     }
 
+    public AccountHolder currentAccountHolder (Principal principal){
+        int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
+        AccountHolder currentAccountHolder = accountHolderDao.getAccountHolderByUserId(currentUserId);
+        return currentAccountHolder;
+    }
+
+    public boolean hasEnoughMoney(Transfer transfer, AccountHolder currentAccountHolder){
+        return (currentAccountHolder.getBalance().compareTo(transfer.getTransferAmount()) != -1);
+    }
+
+    public boolean notSameAccount(Transfer transfer, AccountHolder currentAccountHolder){
+        return currentAccountHolder.getAccountId() != transfer.getAccountToId();
+    }
+
+    public boolean isAccount(Transfer transfer){
+        return accountHolderDao.getAccountHolderByAccountId(transfer.getAccountToId()) != null;
+    }
 
 }

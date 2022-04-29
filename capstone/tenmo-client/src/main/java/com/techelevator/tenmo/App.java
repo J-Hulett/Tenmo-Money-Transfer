@@ -118,13 +118,12 @@ public class App {
     }
 
     private void sendBucks() {
-        int userId = Math.toIntExact(currentUser.getUser().getId());
-        consoleService.listContacts(accountHolderService.getContactList(userId));
+        consoleService.listContacts(accountHolderService.getContactList());
         int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
 
         try {
-            boolean success = transferService.sendingFunds(transferAmount, userIdToSend, userId);
+            boolean success = transferService.sendingFunds(transferAmount, userIdToSend);
             if (!success) {
                 throw new TransferNotAllowedException();
             }
@@ -137,7 +136,6 @@ public class App {
 
     private void requestBucks() {
         // TODO Auto-generated method stub
-
     }
 
 }

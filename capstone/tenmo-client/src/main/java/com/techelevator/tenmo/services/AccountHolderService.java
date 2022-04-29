@@ -36,11 +36,11 @@ public class AccountHolderService {
 //        return accountHolder;
 //    }
 
-    public AccountHolder[] getContactList(int userId) {
+    public AccountHolder[] getContactList() {
        AccountHolder[] accountHolders = null;
        try {
            ResponseEntity<AccountHolder[]> response =
-                   restTemplate.exchange(API_BASE_URL + "holder/contacts/" + userId, HttpMethod.GET,
+                   restTemplate.exchange(API_BASE_URL + "holder/contacts", HttpMethod.GET,
                           makeAuthEntity(),AccountHolder[].class);
            accountHolders = response.getBody();
        } catch (RestClientResponseException | ResourceAccessException e) {
@@ -61,6 +61,20 @@ public class AccountHolderService {
         }
         return accountHolder;
     }
+
+    public AccountHolder getCurrentAccountHolder(){
+        AccountHolder accountHolder = null;
+        try{
+            ResponseEntity<AccountHolder> response =
+                    restTemplate.exchange(API_BASE_URL + "holder/activeHolder", HttpMethod.GET, makeAuthEntity(),
+                            AccountHolder.class);
+            accountHolder = response.getBody();
+        }catch (RestClientResponseException | ResourceAccessException e){
+            BasicLogger.log(e.getMessage());
+        }
+        return accountHolder;
+    }
+
 
 
     public HttpEntity<Void> makeAuthEntity(){

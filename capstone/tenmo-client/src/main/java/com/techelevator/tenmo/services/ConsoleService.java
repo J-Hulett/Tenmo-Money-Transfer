@@ -92,8 +92,6 @@ public class ConsoleService {
         }
     }
 
-
-
     public int promptForInt(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -127,7 +125,7 @@ public class ConsoleService {
     }
 
     public String printBalance(int userId, AccountHolderService accountHolderService) {
-        return accountHolderService.getAccountHolderByUserId(userId).getHolderBalance();
+        return accountHolderService.getCurrentAccountHolder().getHolderBalance();
 
     }
 

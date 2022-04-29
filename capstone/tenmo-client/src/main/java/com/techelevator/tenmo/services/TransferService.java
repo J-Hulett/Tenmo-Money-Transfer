@@ -27,23 +27,18 @@ public class TransferService {
         this.API_BASE_URL = AccountHolderService.API_BASE_URL;
     }
 
-    public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend, int currentUserId){
-        accountHolderService.setAuthToken(authToken);
-         BigDecimal currentUserBalance = accountHolderService.getAccountHolderByUserId(currentUserId).getBalance();
+    public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend){
+         accountHolderService.setAuthToken(authToken);
          int accountToId = accountHolderService.getAccountHolderByUserId(userIdToSend).getAccountId();
-         int accountFromId = accountHolderService.getAccountHolderByUserId(currentUserId).getAccountId();
-         boolean hasEnoughMoney = (currentUserBalance.compareTo(transferAmount) != -1);
-         boolean notSameAccount = (userIdToSend != currentUserId);
+
+
          boolean success = false;
          Transfer transfer = new Transfer();
-         if (hasEnoughMoney && notSameAccount && accountExists(accountHolderService.getAccountHolderByUserId(userIdToSend))) {
-             transfer.setTransferAmount(transferAmount);
              transfer.setTransferTypeId(2);
              transfer.setTransferType(getTransferTypeAsString(2));
              transfer.setTransferStatusId(2);
              transfer.setTransferStatus(getTransferStatusAsString(2));
              transfer.setAccountToId(accountToId);
-             transfer.setAccountFromId(accountFromId);
              transfer.setTransferAmount(transferAmount);
              HttpEntity<Transfer> entity = makeTransferEntity(transfer);
              try {
@@ -51,17 +46,7 @@ public class TransferService {
              } catch (RestClientResponseException | ResourceAccessException e) {
                  BasicLogger.log(e.getMessage());
              }
-
-         }
         return success;
-    }
-
-    public boolean accountExists(AccountHolder accountHolder) {
-        if (accountHolder != null) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public HttpEntity<Transfer> makeTransferEntity(Transfer transfer){
@@ -107,8 +92,5 @@ public class TransferService {
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
     }
-
-
-
 
 }

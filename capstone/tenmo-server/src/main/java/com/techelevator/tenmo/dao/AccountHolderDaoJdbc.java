@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,21 +36,21 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         return accountHolders;
     }
 
-//    @Override
-//    public AccountHolder getAccountHolderByAccountId(int accountId) {
-//        AccountHolder accountHolder = new AccountHolder();
-//        String sql = "SELECT * " +
-//                "FROM account " +
-//                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
-//                "WHERE account_id = ?;";
-//
-//        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
-//
-//        if (rowSet.next()) {
-//            accountHolder = mapRowToAccountHolder(rowSet);
-//        }
-//        return accountHolder;
-//    }
+    @Override
+    public AccountHolder getAccountHolderByAccountId(int accountId) {
+        AccountHolder accountHolder = new AccountHolder();
+        String sql = "SELECT * " +
+                "FROM account " +
+                "JOIN tenmo_user on tenmo_user.user_id = account.user_id " +
+                "WHERE account_id = ?;";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId);
+
+        if (rowSet.next()) {
+            accountHolder = mapRowToAccountHolder(rowSet);
+        }
+        return accountHolder;
+    }
 
     @Override
     public AccountHolder getAccountHolderByUserId(int userId) {
@@ -66,6 +67,14 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         return accountHolder;
     }
 
+//    @Override
+//    public BigDecimal getAccountBalanceByUserId(int userId) {
+//        String sql = "SELECT balance " +
+//                "FROM account " +
+//                "WHERE user_id = ?;";
+//        SqlRowSet rowSet = jdbcTemplate.
+//    }
+
 
     public AccountHolder mapRowToAccountHolder(SqlRowSet rowSet) {
         AccountHolder accountHolder = new AccountHolder();
@@ -75,4 +84,5 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         accountHolder.setUserId(rowSet.getInt("user_id"));
         return accountHolder;
     }
+
 }

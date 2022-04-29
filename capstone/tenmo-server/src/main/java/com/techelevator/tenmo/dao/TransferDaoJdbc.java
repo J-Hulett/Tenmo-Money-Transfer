@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exceptions.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -23,7 +24,7 @@ public class TransferDaoJdbc implements TransferDao{
     }
 
     @Override
-    public boolean sendFunds(Transfer transfer) {
+    public boolean sendFunds(Transfer transfer) throws InvalidTransferException {
         String sql = "BEGIN TRANSACTION; " +
                 "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?,?,?,?,?); " +
                 "UPDATE account SET balance = balance - ? WHERE account_id = ?; " +

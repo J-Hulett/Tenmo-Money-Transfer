@@ -20,7 +20,6 @@ public class Transfer {
     }
 
     public String goThroughUsernames(AccountHolder[] contacts, String toOrFrom) {
-        //if its a from transaction or to transaction
         String usernameToReturn = null;
         for (AccountHolder accountHolder : contacts) {
             if (toOrFrom.equals("From")) {
@@ -33,16 +32,14 @@ public class Transfer {
                 }
             }
         }
-        //if its a from transaction, get accountFromIdsUsername
         return usernameToReturn;
-        //if its a to transaction, get accountsToIdsUsername
     }
 
     public String viewTransferToString(int userId, AccountHolderService accountHolderService) {
         int currentUser = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
         String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
 
-        String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(userId),toOrFrom);
+        String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);
 
         return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
     }

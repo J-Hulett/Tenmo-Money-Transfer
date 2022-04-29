@@ -14,6 +14,14 @@ public class AccountHolder {
     public AccountHolder() {
     }
 
+    public String getHolderBalance(){
+        return "Your current account balance: $" + balance.toString();
+    }
+
+    public String getTransferContacts(){
+        return userId + "         " + username;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -45,14 +53,4 @@ public class AccountHolder {
     public void setUserId(int userId) {
         this.userId = userId;
     }
-
-    public String getHolderBalance(){
-
-        return "Your current account balance: $" + balance.toString();
-    }
-
-    public String getTransferContacts(){
-        return userId + "         " + username;
-    }
-
 }

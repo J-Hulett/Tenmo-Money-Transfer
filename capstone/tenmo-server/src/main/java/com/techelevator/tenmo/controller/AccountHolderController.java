@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountHolderDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.model.AccountHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.security.AccessController;
+import java.security.Principal;
 import java.util.List;
 
 @PreAuthorize("isAuthenticated()")
@@ -18,17 +20,12 @@ import java.util.List;
 public class AccountHolderController {
 
     private AccountHolderDao accountHolderDao;
+    private JdbcUserDao jdbcUserDao;
 
-    public AccountHolderController(AccountHolderDao accountHolderDao) {
+    public AccountHolderController(AccountHolderDao accountHolderDao, JdbcUserDao jdbcUserDao) {
+        this.jdbcUserDao = jdbcUserDao;
         this.accountHolderDao = accountHolderDao;
     }
-
-//
-//    //  "/holder/account/{accountId}"
-//    @RequestMapping(path = "/account/{accountId}",method = RequestMethod.GET)
-//    public AccountHolder getAccountHolderByAccountId(@PathVariable int accountId) {
-//        return accountHolderDao.getAccountHolderByAccountId(accountId);
-//    }
 
     // "/holder/{userId}"
     @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
@@ -36,11 +33,18 @@ public class AccountHolderController {
         return accountHolderDao.getAccountHolderByUserId(userId);
     }
 
+    @RequestMapping(path = "/activeHolder", method = RequestMethod.GET)
+    public AccountHolder getCurrentAccountHolder(Principal principal){
+        int currentUserId =  jdbcUserDao.findIdByUsername(principal.getName());
+        return accountHolderDao.getAccountHolderByUserId(currentUserId);
+    }
 
     // "/holder/contacts/{userId}
-    @RequestMapping(path = "/contacts/{userId}", method = RequestMethod.GET)
-    public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(@PathVariable int userId) {
-        return accountHolderDao.getListOfOtherAccountHoldersByUserId(userId);
+    @RequestMapping(path = "/contacts", method = RequestMethod.GET)
+    public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(Principal principal) {
+        int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
+        return accountHolderDao.getListOfOtherAccountHoldersByUserId(currentUserId);
     }
+
 
 }
