@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.controller.TransferController;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,10 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class TransferDaoJdbc implements TransferDao{
+public class TransferDaoJdbc implements TransferDao {
     private JdbcTemplate jdbcTemplate;
+    JdbcUserDao jdbcUserDao = new JdbcUserDao(jdbcTemplate);
 
-    public TransferDaoJdbc(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
+
+    public TransferDaoJdbc(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
 
     @Override
@@ -37,22 +42,20 @@ public class TransferDaoJdbc implements TransferDao{
 
 
     @Override
-    public List<Transfer> listAllTransfers() {
+    public List<Transfer> listAllTransfers(int accountId) {
         List<Transfer> transferList = new ArrayList<>();
 
-        String sql = "SELECT * FROM transfer JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id;";
+        String sql = "SELECT * FROM transfer JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+                "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id "
+                + "WHERE account_from = ? OR account_to = ?;";
 
-//        String sql = "SELECT * " +
-//                "FROM transfer " +
-//                "JOIN transfer_status on transfer_status.transfer_status_id = transfer.transfer_status_id " +
-//                "JOIN transfer_type on transfer.transfer_type_id = transfer_type.transfer_type_id " +
-//                "WHERE transfer.transfer_status_id = ?;";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, accountId);
 
         while (rowSet.next()) {
-           Transfer transfer = mapRowToTransfer(rowSet);
-           transferList.add(transfer);
+            Transfer transfer = mapRowToTransfer(rowSet);
+            transferList.add(transfer);
         }
         return transferList;
     }
@@ -76,7 +79,6 @@ public class TransferDaoJdbc implements TransferDao{
     }
 
 
-
     public Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rowSet.getInt("transfer_id"));
@@ -89,8 +91,6 @@ public class TransferDaoJdbc implements TransferDao{
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         return transfer;
     }
-
-
 
 
 }

@@ -18,7 +18,8 @@ public class TransferService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
-    public void setAuthToken(String authToken){
+
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 
@@ -27,54 +28,40 @@ public class TransferService {
         this.API_BASE_URL = AccountHolderService.API_BASE_URL;
     }
 
-    public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend){
-         accountHolderService.setAuthToken(authToken);
-         int accountToId = accountHolderService.getAccountHolderByUserId(userIdToSend).getAccountId();
+    public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend) {
+        accountHolderService.setAuthToken(authToken);
+        int accountToId = getAccountIdFromContacts(accountHolderService.getContactList(), userIdToSend);
+        // set transfer status' in the future
+        // set transferId status to pending
 
-
-         boolean success = false;
-         Transfer transfer = new Transfer();
-             transfer.setTransferTypeId(2);
-             transfer.setTransferType(getTransferTypeAsString(2));
-             transfer.setTransferStatusId(2);
-             transfer.setTransferStatus(getTransferStatusAsString(2));
-             transfer.setAccountToId(accountToId);
-             transfer.setTransferAmount(transferAmount);
-             HttpEntity<Transfer> entity = makeTransferEntity(transfer);
-             try {
-                 success = restTemplate.postForObject(API_BASE_URL + "transfer/send",entity, boolean.class);
-             } catch (RestClientResponseException | ResourceAccessException e) {
-                 BasicLogger.log(e.getMessage());
-             }
+        boolean success = false;
+        Transfer transfer = new Transfer();
+        transfer.setTransferTypeId(2);
+        transfer.setTransferType(getTransferTypeAsString(2));
+        transfer.setTransferStatusId(2);
+        transfer.setTransferStatus(getTransferStatusAsString(2));
+        transfer.setAccountToId(accountToId);
+        transfer.setTransferAmount(transferAmount);
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
+        try {
+            success = restTemplate.postForObject(API_BASE_URL + "transfer/send", entity, boolean.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
         return success;
     }
 
-    public HttpEntity<Transfer> makeTransferEntity(Transfer transfer){
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authToken);
-        return new HttpEntity<>(transfer,headers);
-    }
-
-    public String getTransferTypeAsString(int typeId) {
-        if (typeId == 1) {
-            return "Request";
-        } else {
-            return "Send";
+    public int getAccountIdFromContacts(AccountHolder[] contacts, int userToSend) {
+        int accountToId = 0;
+        for (AccountHolder accountHolder : contacts) {
+            if (accountHolder.getUserId() == userToSend) {
+                accountToId = accountHolder.getAccountId();
+            }
         }
+        return accountToId;
     }
 
-    public String getTransferStatusAsString(int statusId){  //might need another model
-        if (statusId == 1) {
-            return "Pending";
-        } else if (statusId == 2) {
-            return "Approved";
-        } else {
-            return "Rejected";
-        }
-    }
-
-    public Transfer[] getTransferList(){
+    public Transfer[] getTransferList() {
         Transfer[] transfers = null;
         try {
             ResponseEntity<Transfer[]> response =
@@ -87,10 +74,34 @@ public class TransferService {
         return transfers;
     }
 
-    public HttpEntity<Void> makeAuthEntity(){
+    public String getTransferTypeAsString(int typeId) {
+        if (typeId == 1) {
+            return "Request";
+        } else {
+            return "Send";
+        }
+    }
+
+    public String getTransferStatusAsString(int statusId) {  //might need another model
+        if (statusId == 1) {
+            return "Pending";
+        } else if (statusId == 2) {
+            return "Approved";
+        } else {
+            return "Rejected";
+        }
+    }
+
+    public HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
     }
 
+    public HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(authToken);
+        return new HttpEntity<>(transfer, headers);
+    }
 }

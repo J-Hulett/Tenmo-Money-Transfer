@@ -35,8 +35,8 @@ public class Transfer {
         return usernameToReturn;
     }
 
-    public String viewTransferToString(int userId, AccountHolderService accountHolderService) {
-        int currentUser = accountHolderService.getAccountHolderByUserId(userId).getAccountId();
+    public String viewTransferToString( AccountHolderService accountHolderService) {
+        int currentUser = accountHolderService.getCurrentAccountHolder().getAccountId();
         String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
 
         String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AccountHolderDaoJdbc implements AccountHolderDao{
+public class AccountHolderDaoJdbc implements AccountHolderDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -66,15 +66,6 @@ public class AccountHolderDaoJdbc implements AccountHolderDao{
         }
         return accountHolder;
     }
-
-//    @Override
-//    public BigDecimal getAccountBalanceByUserId(int userId) {
-//        String sql = "SELECT balance " +
-//                "FROM account " +
-//                "WHERE user_id = ?;";
-//        SqlRowSet rowSet = jdbcTemplate.
-//    }
-
 
     public AccountHolder mapRowToAccountHolder(SqlRowSet rowSet) {
         AccountHolder accountHolder = new AccountHolder();

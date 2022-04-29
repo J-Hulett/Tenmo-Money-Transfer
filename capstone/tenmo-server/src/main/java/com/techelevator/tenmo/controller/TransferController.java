@@ -31,38 +31,41 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
-    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException{
-
-        if(hasEnoughMoney(transfer, currentAccountHolder(principal))
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
+        boolean success = false;
+        if (hasEnoughMoney(transfer, currentAccountHolder(principal))
                 && notSameAccount(transfer, currentAccountHolder(principal))
-                && isAccount(transfer)){
+                && isAccount(transfer)) {
             transfer.setAccountFromId(currentAccountHolder(principal).getAccountId());
+            transferDao.sendFunds(transfer);
+            success = true;
         }
-
-        return transferDao.sendFunds(transfer);
+        return success;
     }
 
     @RequestMapping(path = "/list", method = RequestMethod.GET)
-    public List<Transfer> getListOfTransfers(){
-        return transferDao.listAllTransfers();
+    public List<Transfer> getListOfTransfers(Principal principal) {
+        int accountId = currentAccountHolder(principal).getAccountId();
+        return transferDao.listAllTransfers(accountId);
     }
 
-    public AccountHolder currentAccountHolder (Principal principal){
+    public AccountHolder currentAccountHolder(Principal principal) {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         AccountHolder currentAccountHolder = accountHolderDao.getAccountHolderByUserId(currentUserId);
         return currentAccountHolder;
     }
 
-    public boolean hasEnoughMoney(Transfer transfer, AccountHolder currentAccountHolder){
+    public boolean hasEnoughMoney(Transfer transfer, AccountHolder currentAccountHolder) {
         return (currentAccountHolder.getBalance().compareTo(transfer.getTransferAmount()) != -1);
     }
 
-    public boolean notSameAccount(Transfer transfer, AccountHolder currentAccountHolder){
+    public boolean notSameAccount(Transfer transfer, AccountHolder currentAccountHolder) {
         return currentAccountHolder.getAccountId() != transfer.getAccountToId();
     }
 
-    public boolean isAccount(Transfer transfer){
+    public boolean isAccount(Transfer transfer) {
         return accountHolderDao.getAccountHolderByAccountId(transfer.getAccountToId()) != null;
     }
+
 
 }

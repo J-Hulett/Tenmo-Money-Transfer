@@ -14,5 +14,4 @@ public interface AccountHolderDao {
 
     AccountHolder getAccountHolderByUserId(int userId);
 
-//    BigDecimal getAccountBalanceByUserId(int userId);
 }

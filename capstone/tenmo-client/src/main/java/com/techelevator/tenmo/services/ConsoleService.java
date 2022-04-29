@@ -82,13 +82,13 @@ public class ConsoleService {
         System.out.println();
     }
 
-    public void printTransferList(Transfer[] transfers,int userId, AccountHolderService accountHolderService){
+    public void printTransferList(Transfer[] transfers, int userId, AccountHolderService accountHolderService) {
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
         System.out.println("ID          From/To                 Amount");
         System.out.println("-------------------------------------------");
-        for (Transfer transfer: transfers) {
-            System.out.println(transfer.viewTransferToString(userId,accountHolderService));
+        for (Transfer transfer : transfers) {
+            System.out.println(transfer.viewTransferToString(accountHolderService));
         }
     }
 

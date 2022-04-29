@@ -28,18 +28,17 @@ public class AccountHolderController {
     }
 
     // "/holder/{userId}"
-    @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
-    public AccountHolder getAccountHolderByUserId(@PathVariable int userId){
-        return accountHolderDao.getAccountHolderByUserId(userId);
-    }
+//    @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
+//    public AccountHolder getAccountHolderByUserId(@PathVariable int userId) {
+//        return accountHolderDao.getAccountHolderByUserId(userId);
+//    }
 
     @RequestMapping(path = "/activeHolder", method = RequestMethod.GET)
-    public AccountHolder getCurrentAccountHolder(Principal principal){
-        int currentUserId =  jdbcUserDao.findIdByUsername(principal.getName());
+    public AccountHolder getCurrentAccountHolder(Principal principal) {
+        int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         return accountHolderDao.getAccountHolderByUserId(currentUserId);
     }
 
-    // "/holder/contacts/{userId}
     @RequestMapping(path = "/contacts", method = RequestMethod.GET)
     public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(Principal principal) {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
