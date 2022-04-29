@@ -35,7 +35,7 @@ public class Transfer {
         return usernameToReturn;
     }
 
-    public String viewTransferToString( AccountHolderService accountHolderService) {
+    public String viewTransferToString(AccountHolderService accountHolderService) {
         int currentUser = accountHolderService.getCurrentAccountHolder().getAccountId();
         String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
 
@@ -43,6 +43,17 @@ public class Transfer {
 
         return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
     }
+
+    public String toString(AccountHolderService accountHolderService) {
+        return  "Id: " + transferId + "\n" +
+                "From: " + accountHolderService.getUsernameByAccountId(accountFromId) + "\n" +
+                "To: " + accountHolderService.getUsernameByAccountId(accountToId) + "\n" +
+                "Type: " + transferType + "\n" +
+                "Status: " + transferStatus + "\n" +
+                "Amount: $" + transferAmount;
+
+    }
+
 
     public int getTransferTypeId() {
         return transferTypeId;

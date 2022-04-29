@@ -108,6 +108,8 @@ public class App {
     private void viewTransferHistory() {
         int userId = Math.toIntExact(currentUser.getUser().getId());
         consoleService.printTransferList(transferService.getTransferList(), userId, accountHolderService);
+        int transferId =  consoleService.promptUserForTransferId();
+        consoleService.printTransferDetail(transferId,transferService,accountHolderService);
         // TODO Auto-generated method stub
 
     }

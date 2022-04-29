@@ -90,7 +90,17 @@ public class ConsoleService {
         for (Transfer transfer : transfers) {
             System.out.println(transfer.viewTransferToString(accountHolderService));
         }
+        System.out.println();
     }
+
+    public void printTransferDetail(int transferId, TransferService transferService, AccountHolderService accountHolderService) {
+        System.out.println("--------------------------------------------");
+        System.out.println("Transfer Details");
+        System.out.println("--------------------------------------------");
+        System.out.println();
+        System.out.println(transferService.getTransferById(transferId).toString(accountHolderService));
+    }
+
 
     public int promptForInt(String prompt) {
         System.out.print(prompt);
@@ -101,6 +111,11 @@ public class ConsoleService {
                 System.out.println("Please enter a number.");
             }
         }
+    }
+
+    public int promptUserForTransferId(){
+        String transferId = "Please enter transfer ID to view details (0 to cancel): ";
+        return promptForInt(transferId);
     }
 
     public BigDecimal promptForTransferAmount() {

@@ -74,6 +74,16 @@ public class TransferService {
         return transfers;
     }
 
+    public Transfer getTransferById(int transferId) {
+        Transfer transferToReturn = null;
+        for (Transfer transfer : getTransferList()) {
+            if (transfer.getTransferId() == transferId) {
+                transferToReturn = transfer;
+            }
+        }
+        return transferToReturn;
+    }
+
     public String getTransferTypeAsString(int typeId) {
         if (typeId == 1) {
             return "Request";

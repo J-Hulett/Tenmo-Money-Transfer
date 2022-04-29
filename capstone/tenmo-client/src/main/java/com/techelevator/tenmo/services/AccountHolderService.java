@@ -75,6 +75,16 @@ public class AccountHolderService {
         return accountHolder;
     }
 
+    public String getUsernameByAccountId(int accountId) {
+        String username = null;
+        for (AccountHolder accountHolder : getContactList()) {
+            if (accountHolder.getAccountId() == accountId) {
+                username = accountHolder.getUsername();
+            }
+        }
+        return username;
+    }
+
 
     public HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
