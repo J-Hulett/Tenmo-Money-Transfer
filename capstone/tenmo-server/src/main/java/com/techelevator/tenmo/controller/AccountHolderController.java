@@ -41,10 +41,4 @@ public class AccountHolderController {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         return accountHolderDao.getListOfOtherAccountHoldersByUserId(currentUserId);
     }
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> bf1fb9df9f10e57c78768e7831d264f328d71a42
 }
