@@ -23,19 +23,6 @@ public class AccountHolderService {
         this.authToken = authToken;
     }
 
-//    public AccountHolder getAccountHolderByAccountId(int accountId){
-//        AccountHolder accountHolder = null;
-//        try{
-//            ResponseEntity<AccountHolder> response =
-//                    restTemplate.exchange(API_BASE_URL + "holder/account/" + accountId, HttpMethod.GET, makeAuthEntity(),
-//                            AccountHolder.class);
-//            accountHolder = response.getBody();
-//        } catch (RestClientResponseException | ResourceAccessException e){
-//            BasicLogger.log(e.getMessage());
-//        }
-//        return accountHolder;
-//    }
-
     public AccountHolder[] getContactList() {
         AccountHolder[] accountHolders = null;
         try {
@@ -48,19 +35,6 @@ public class AccountHolderService {
         }
         return accountHolders;
     }
-
-//    public AccountHolder getAccountHolderByUserId(int userId) {
-//        AccountHolder accountHolder = null;
-//        try {
-//            ResponseEntity<AccountHolder> response =
-//                    restTemplate.exchange(API_BASE_URL + "holder/" + userId, HttpMethod.GET, makeAuthEntity(),
-//                            AccountHolder.class);
-//            accountHolder = response.getBody();
-//        } catch (RestClientResponseException | ResourceAccessException e) {
-//            BasicLogger.log(e.getMessage());
-//        }
-//        return accountHolder;
-//    }
 
     public AccountHolder getCurrentAccountHolder() {
         AccountHolder accountHolder = null;
@@ -85,11 +59,9 @@ public class AccountHolderService {
         return username;
     }
 
-
     public HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
     }
-
 }

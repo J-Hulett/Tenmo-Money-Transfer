@@ -35,17 +35,15 @@ public class Transfer {
         return usernameToReturn;
     }
 
-    public String viewTransferToString(AccountHolderService accountHolderService) {
+    public String viewTransferToString(AccountHolderService accountHolderService, boolean isTransfer) {
         int currentUser = accountHolderService.getCurrentAccountHolder().getAccountId();
         String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
         String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);
-        return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
-    }
+        if(isTransfer){
+            return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
+        } else
+            return transferId + "          " + nameOnAccount + "                 $ " + transferAmount;
 
-    public String viewRequestToString(AccountHolderService accountHolderService) {
-        String toOrFrom = "From";
-        String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);
-        return transferId + "          " + nameOnAccount + "                 $ " + transferAmount;
     }
 
     public String toString(AccountHolderService accountHolderService) {
@@ -57,7 +55,6 @@ public class Transfer {
                 "Amount: $" + transferAmount;
 
     }
-
 
     public int getTransferTypeId() {
         return transferTypeId;

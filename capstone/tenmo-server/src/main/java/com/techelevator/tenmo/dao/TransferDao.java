@@ -12,9 +12,9 @@ public interface TransferDao {
 
     List<Transfer> listAllTransfers(int accountId);
 
-    Transfer getTransferById(int transferID);
+    boolean rejectTransfer(Transfer transfer);
+
+    boolean acceptTransfer(Transfer transfer) throws InvalidTransferException;
 
     boolean sendFunds(Transfer transfer) throws InvalidTransferException;
-
-
 }

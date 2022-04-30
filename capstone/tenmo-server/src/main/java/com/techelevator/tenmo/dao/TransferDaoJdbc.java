@@ -1,13 +1,11 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.controller.TransferController;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +28,24 @@ public class TransferDaoJdbc implements TransferDao {
     }
 
     @Override
+    public boolean rejectTransfer(Transfer transfer) {
+        String sql = "UPDATE transfer SET transfer_status_id = ? WHERE transfer_id = ?;";
+        return jdbcTemplate.update(sql, transfer.getTransferStatusId(), transfer.getTransferId()) == 0;
+    }
+
+    @Override
+    public boolean acceptTransfer(Transfer transfer) throws InvalidTransferException{
+        String sql = "BEGIN TRANSACTION; " +
+                "UPDATE transfer SET transfer_status_id = ? WHERE transfer_id = ?; " +
+                "UPDATE account SET balance = balance - ? WHERE account_id = ?; " +
+                "UPDATE account SET balance = balance + ? WHERE account_id = ?; " +
+                "COMMIT;";
+        return jdbcTemplate.update(sql, transfer.getTransferStatusId(), transfer.getTransferId(),
+                transfer.getTransferAmount(), transfer.getAccountFromId(), transfer.getTransferAmount(),
+                transfer.getAccountToId()) == 0;
+    }
+
+    @Override
     public boolean sendFunds(Transfer transfer) throws InvalidTransferException {
         String sql = "BEGIN TRANSACTION; " +
                 "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?,?,?,?,?); " +
@@ -40,7 +56,6 @@ public class TransferDaoJdbc implements TransferDao {
                 transfer.getAccountToId(), transfer.getTransferAmount(), transfer.getTransferAmount(), transfer.getAccountFromId(),
                 transfer.getTransferAmount(), transfer.getAccountToId()) == 0;
     }
-
 
     @Override
     public List<Transfer> listAllTransfers(int accountId) {
@@ -60,25 +75,6 @@ public class TransferDaoJdbc implements TransferDao {
         return transferList;
     }
 
-    @Override
-    public Transfer getTransferById(int transferID) {
-        Transfer transfer = new Transfer();
-        String sql = "SELECT * " +
-                "FROM transfer " +
-                "JOIN transfer_status on transfer_status.transfer_status_id = transfer.transfer_status_id " +
-                "JOIN transfer_type on transfer.transfer_type_id = transfer_type.transfer_type_id " +
-                "WHERE transfer_id = ?;";
-
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, transferID);
-
-        if (rowSet.next()) {
-            transfer = mapRowToTransfer(rowSet);
-        }
-
-        return transfer;
-    }
-
-
     public Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rowSet.getInt("transfer_id"));
@@ -91,6 +87,4 @@ public class TransferDaoJdbc implements TransferDao {
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         return transfer;
     }
-
-
 }

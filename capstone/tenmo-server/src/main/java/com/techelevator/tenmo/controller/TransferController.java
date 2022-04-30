@@ -6,6 +6,8 @@ import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +35,8 @@ public class TransferController {
         this.transferDao = transferDao;
         this.jdbcUserDao = jdbcUserDao;
     }
-
+    @ApiOperation("Sends Funds From One User To Another")
+    @ApiParam
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
     public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
@@ -52,6 +55,8 @@ public class TransferController {
         return success;
     }
 
+    @ApiOperation("Sends A Request To The Server To Await Approval")
+    @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/send/request", method = RequestMethod.POST)
     public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
@@ -69,9 +74,38 @@ public class TransferController {
         return success;
     }
 
+    @ApiOperation("Rejects A Given Request")
+    @ApiParam
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/reject", method = RequestMethod.PUT)
+    public boolean rejectRequest(@Valid @RequestBody Transfer transfer){
+        transfer.setTransferStatusId(STATUS_REJECTED);
+        transfer.setTransferStatus(getTransferStatusAsString(STATUS_REJECTED));
+        return transferDao.rejectTransfer(transfer);
+    }
+
+    @ApiOperation("Accepts A Given Request")
+    @ApiParam
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/accept", method = RequestMethod.PUT)
+    public boolean acceptRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException{
+        boolean success = false;
+        if (hasEnoughMoney(transfer, currentAccountHolder(principal))
+                && notSameAccount(transfer, currentAccountHolder(principal))
+                && isAccount(transfer)) {
+            transfer.setTransferStatusId(STATUS_APPROVED);
+            transfer.setTransferStatus(getTransferStatusAsString(STATUS_APPROVED));
+            transferDao.acceptTransfer(transfer);
+            success = true;
+        }
+        return success;
+    }
+
+    @ApiOperation("Gets A List Of Transfers")
+    @ApiParam
     @RequestMapping(path = "/list", method = RequestMethod.GET)
     public List<Transfer> getListOfTransfers(Principal principal) {
-        int accountId = currentAccountHolder(principal).getAccountId();1
+        int accountId = currentAccountHolder(principal).getAccountId();
         return transferDao.listAllTransfers(accountId);
     }
 
