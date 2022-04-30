@@ -13,5 +13,4 @@ public interface AccountHolderDao {
     AccountHolder getAccountHolderByAccountId(int accountId);
 
     AccountHolder getAccountHolderByUserId(int userId);
-
 }

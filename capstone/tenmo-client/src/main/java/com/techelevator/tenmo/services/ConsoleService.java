@@ -14,6 +14,8 @@ public class ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
     public static final int PENDING = 1;
+    public static final int REJECTED = 3;
+    public static final int APPROVED = 2;
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -90,7 +92,7 @@ public class ConsoleService {
         System.out.println("-------------------------------------------");
         for (Transfer transfer : transfers) {
             if (transfer.getTransferStatusId() != PENDING) {
-                System.out.println(transfer.viewTransferToString(accountHolderService));
+                System.out.println(transfer.viewTransferToString(accountHolderService, true));
             }
         }
         System.out.println("-------------------------------------------");
@@ -104,8 +106,8 @@ public class ConsoleService {
         System.out.println("-------------------------------------------");
 
         for (Transfer transfer : transfers) {
-            if (transfer.getTransferStatusId() == PENDING) {
-                System.out.println(transfer.viewRequestToString(accountHolderService));
+            if (transfer.getTransferStatusId() == PENDING && transfer.getAccountToId() != accountHolderService.getCurrentAccountHolder().getAccountId()) {
+                System.out.println(transfer.viewTransferToString(accountHolderService, false));
             }
         }
         System.out.println("-------------------------------------------");
@@ -120,6 +122,14 @@ public class ConsoleService {
         System.out.println(transferService.getTransferById(transferId).toString(accountHolderService));
     }
 
+    public void printApproveOrRejectTransferOption(){
+        System.out.println("-------------------------------------------");
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't Approve or reject");
+        System.out.println("-------------------------------------------");
+    }
+
     public int promptForInt(String prompt) {
         System.out.print(prompt);
         while (true) {
@@ -129,6 +139,11 @@ public class ConsoleService {
                 System.out.println("Please enter a number.");
             }
         }
+    }
+
+    public int promptForApproveOrReject(){
+        String userSelection = "Please choose an option:";
+        return promptForInt(userSelection);
     }
 
     public int promptUserForTransferId(){
@@ -151,9 +166,9 @@ public class ConsoleService {
         return promptForInt(enterId);
     }
 
-    public int promptForUserIdToApproveOrReject() {
-        String enterId = "Please enter transfer ID to approve/reject (0 to cancel): ";
-        return promptForInt(enterId);
+    public int promptForTransferIdToApproveOrReject() {
+        String transferId = "Please enter transfer ID to approve/reject (0 to cancel): ";
+        return promptForInt(transferId);
     }
 
     public BigDecimal promptForBigDecimal(String prompt) {

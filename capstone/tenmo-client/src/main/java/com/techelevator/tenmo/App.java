@@ -113,7 +113,14 @@ public class App {
 
     private void viewPendingRequests() {
         consoleService.printRequestList(transferService.getTransferList(), accountHolderService);
-        int userId = consoleService.promptForUserIdToApproveOrReject();
+        int transferId = consoleService.promptForTransferIdToApproveOrReject();
+        consoleService.printApproveOrRejectTransferOption();
+        int selectedOption = consoleService.promptForApproveOrReject();
+       boolean success = transferService.acceptOrRejectRequest(selectedOption, transferId);
+      // Put break point here to see if success is false;
+       if(success){
+           System.out.println("IT WORKED!!!!!!!");
+       }
     }
 
     private void sendBucks() {

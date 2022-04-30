@@ -63,6 +63,37 @@ public class TransferService {
         return success;
     }
 
+     public boolean acceptOrRejectRequest(int selectedOption, int transferId){
+        HttpEntity<Transfer> entity = makeTransferEntity(getTransferById(transferId));
+        boolean successful = false;
+        switch(selectedOption){
+            case 1 :
+                try{
+                    ResponseEntity<Boolean> success =
+                            restTemplate.exchange(API_BASE_URL + "transfer/accept", HttpMethod.PUT , entity, boolean.class);
+                    successful = success.getBody();
+                } catch (RestClientResponseException | ResourceAccessException e){
+                    BasicLogger.log(e.getMessage());
+                }
+                break;
+            case 2 :
+                try{
+                    ResponseEntity<Boolean> success =
+                            restTemplate.exchange(API_BASE_URL + "transfer/reject", HttpMethod.PUT , entity, boolean.class);
+                    successful = success.getBody();
+                } catch (RestClientResponseException | ResourceAccessException e){
+                    BasicLogger.log(e.getMessage());
+                }
+                break;
+            case 0 :
+                successful = true;
+                break;
+            default :
+                System.out.println("Invalid Selection - Please Enter a Valid Option");
+        }
+        return successful;
+     }
+
     public int getAccountIdFromContacts(AccountHolder[] contacts, int userToSend) {
         int accountToId = 0;
         for (AccountHolder accountHolder : contacts) {
