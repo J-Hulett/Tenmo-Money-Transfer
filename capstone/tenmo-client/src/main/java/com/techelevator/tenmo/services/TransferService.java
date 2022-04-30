@@ -4,6 +4,7 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.util.BasicLogger;
+import com.techelevator.util.InvalidTransferException;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
@@ -16,12 +17,6 @@ public class TransferService {
     AccountHolderService accountHolderService = new AccountHolderService();
     String API_BASE_URL;
     private final RestTemplate restTemplate = new RestTemplate();
-    public static final int TYPE_REQUEST = 1;
-    public static final int TYPE_SEND = 2;
-    public static final int STATUS_PENDING = 1;
-    public static final int STATUS_APPROVED = 2;
-    public static final int STATUS_REJECTED = 3;
-
 
     private String authToken = null;
 
@@ -37,20 +32,31 @@ public class TransferService {
     public boolean sendingFunds(BigDecimal transferAmount, int userIdToSend) {
         accountHolderService.setAuthToken(authToken);
         int accountToId = getAccountIdFromContacts(accountHolderService.getContactList(), userIdToSend);
-        // set transfer status' in the future
-        // set transferId status to pending
 
         boolean success = false;
         Transfer transfer = new Transfer();
-        transfer.setTransferTypeId(TYPE_SEND);
-        transfer.setTransferType(getTransferTypeAsString(TYPE_SEND));
-        transfer.setTransferStatusId(STATUS_PENDING);
-        transfer.setTransferStatus(getTransferStatusAsString(STATUS_PENDING));
         transfer.setAccountToId(accountToId);
         transfer.setTransferAmount(transferAmount);
         HttpEntity<Transfer> entity = makeTransferEntity(transfer);
         try {
             success = restTemplate.postForObject(API_BASE_URL + "transfer/send", entity, boolean.class);
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+        return success;
+    }
+
+    public boolean sendingRequest(BigDecimal requestAmount, int userIdToRequest) {
+        accountHolderService.setAuthToken(authToken);
+        int accountToRequestId = getAccountIdFromContacts(accountHolderService.getContactList(), userIdToRequest);
+
+        boolean success = false;
+        Transfer transfer = new Transfer();
+        transfer.setAccountFromId(accountToRequestId);
+        transfer.setTransferAmount(requestAmount);
+        HttpEntity<Transfer> entity = makeTransferEntity(transfer);
+        try {
+            success = restTemplate.postForObject(API_BASE_URL + "transfer/send/request", entity, boolean.class);
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
@@ -88,24 +94,6 @@ public class TransferService {
             }
         }
         return transferToReturn;
-    }
-
-    public String getTransferTypeAsString(int typeId) {
-        if (typeId == 1) {
-            return "Request";
-        } else {
-            return "Send";
-        }
-    }
-
-    public String getTransferStatusAsString(int statusId) {  //might need another model
-        if (statusId == 1) {
-            return "Pending";
-        } else if (statusId == 2) {
-            return "Approved";
-        } else {
-            return "Rejected";
-        }
     }
 
     public HttpEntity<Void> makeAuthEntity() {

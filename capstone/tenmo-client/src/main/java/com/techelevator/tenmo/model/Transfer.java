@@ -38,10 +38,14 @@ public class Transfer {
     public String viewTransferToString(AccountHolderService accountHolderService) {
         int currentUser = accountHolderService.getCurrentAccountHolder().getAccountId();
         String toOrFrom = (accountFromId == currentUser) ? "To" : "From";
-
         String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);
-
         return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
+    }
+
+    public String viewRequestToString(AccountHolderService accountHolderService) {
+        String toOrFrom = "From";
+        String nameOnAccount = goThroughUsernames(accountHolderService.getContactList(), toOrFrom);
+        return transferId + "          " + nameOnAccount + "                 $ " + transferAmount;
     }
 
     public String toString(AccountHolderService accountHolderService) {

@@ -14,7 +14,6 @@ import java.util.List;
 @Component
 public class TransferDaoJdbc implements TransferDao {
     private JdbcTemplate jdbcTemplate;
-    JdbcUserDao jdbcUserDao = new JdbcUserDao(jdbcTemplate);
 
 
     public TransferDaoJdbc(JdbcTemplate jdbcTemplate) {
@@ -23,9 +22,9 @@ public class TransferDaoJdbc implements TransferDao {
 
 
     @Override
-    public boolean initiateTransfer(Transfer transfer) {
-        String sql = "BEGIN TRANSACTION; " +
-                "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (?,?,?,?,?);";
+    public boolean initiateTransfer(Transfer transfer) throws InvalidTransferException{
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (?,?,?,?,?);";
         return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFromId(),
                 transfer.getAccountToId(), transfer.getTransferAmount()) == 0;
     }

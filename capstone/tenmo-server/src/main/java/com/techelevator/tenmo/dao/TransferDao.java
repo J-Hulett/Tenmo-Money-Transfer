@@ -7,7 +7,8 @@ import java.security.Principal;
 import java.util.List;
 
 public interface TransferDao {
-    boolean initiateTransfer(Transfer transfer);
+
+    boolean initiateTransfer(Transfer transfer) throws InvalidTransferException;
 
     List<Transfer> listAllTransfers(int accountId);
 
