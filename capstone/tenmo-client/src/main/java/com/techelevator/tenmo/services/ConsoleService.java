@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class ConsoleService {
 
     private final Scanner scanner = new Scanner(System.in);
+    public static final int PENDING = 1;
 
     public int promptForMenuSelection(String prompt) {
         int menuSelection;
@@ -82,14 +83,32 @@ public class ConsoleService {
         System.out.println();
     }
 
-    public void printTransferList(Transfer[] transfers, int userId, AccountHolderService accountHolderService) {
+    public void printTransferList(Transfer[] transfers, AccountHolderService accountHolderService) {
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
         System.out.println("ID          From/To                 Amount");
         System.out.println("-------------------------------------------");
         for (Transfer transfer : transfers) {
-            System.out.println(transfer.viewTransferToString(accountHolderService));
+            if (transfer.getTransferStatusId() != PENDING) {
+                System.out.println(transfer.viewTransferToString(accountHolderService));
+            }
         }
+        System.out.println("-------------------------------------------");
+        System.out.println();
+    }
+
+    public void printRequestList(Transfer[] transfers, AccountHolderService accountHolderService) {
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID            To                     Amount");
+        System.out.println("-------------------------------------------");
+
+        for (Transfer transfer : transfers) {
+            if (transfer.getTransferStatusId() == PENDING) {
+                System.out.println(transfer.viewRequestToString(accountHolderService));
+            }
+        }
+        System.out.println("-------------------------------------------");
         System.out.println();
     }
 
@@ -100,7 +119,6 @@ public class ConsoleService {
         System.out.println();
         System.out.println(transferService.getTransferById(transferId).toString(accountHolderService));
     }
-
 
     public int promptForInt(String prompt) {
         System.out.print(prompt);
@@ -123,8 +141,18 @@ public class ConsoleService {
         return promptForBigDecimal(amountToTransfer);
     }
 
-    public int promptForUserIdToSendMoneyTo() {
+    public int promptForUserIdToSendTo() {
         String enterId = "Enter ID of user you are sending to (0 to cancel):";
+        return promptForInt(enterId);
+    }
+
+    public int promptForUserIdToRequestFrom() {
+        String enterId = "Enter ID of user you are requesting from (0 to cancel):";
+        return promptForInt(enterId);
+    }
+
+    public int promptForUserIdToApproveOrReject() {
+        String enterId = "Please enter transfer ID to approve/reject (0 to cancel): ";
         return promptForInt(enterId);
     }
 

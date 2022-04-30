@@ -106,22 +106,19 @@ public class App {
     }
 
     private void viewTransferHistory() {
-        int userId = Math.toIntExact(currentUser.getUser().getId());
-        consoleService.printTransferList(transferService.getTransferList(), userId, accountHolderService);
+        consoleService.printTransferList(transferService.getTransferList(), accountHolderService);
         int transferId =  consoleService.promptUserForTransferId();
         consoleService.printTransferDetail(transferId,transferService,accountHolderService);
-        // TODO Auto-generated method stub
-
     }
 
     private void viewPendingRequests() {
-        // TODO Auto-generated method stub
-
+        consoleService.printRequestList(transferService.getTransferList(), accountHolderService);
+        int userId = consoleService.promptForUserIdToApproveOrReject();
     }
 
     private void sendBucks() {
         consoleService.listContacts(accountHolderService.getContactList());
-        int userIdToSend = consoleService.promptForUserIdToSendMoneyTo();
+        int userIdToSend = consoleService.promptForUserIdToSendTo();
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
 
         try {
@@ -133,11 +130,21 @@ public class App {
             BasicLogger.log(e.getMessage());
             consoleService.printErrorMessage();
         }
-
     }
 
     private void requestBucks() {
-        // TODO Auto-generated method stub
-    }
+        consoleService.listContacts(accountHolderService.getContactList());
+        int userToRequest = consoleService.promptForUserIdToRequestFrom();
+        BigDecimal requestAmount = consoleService.promptForTransferAmount();
 
+        try {
+            boolean succes = transferService.sendingRequest(requestAmount, userToRequest);
+            if (!succes) {
+                throw new TransferNotAllowedException();
+            }
+        } catch (TransferNotAllowedException e) {
+            BasicLogger.log(e.getMessage());
+            consoleService.printErrorMessage();
+        }
+    }
 }

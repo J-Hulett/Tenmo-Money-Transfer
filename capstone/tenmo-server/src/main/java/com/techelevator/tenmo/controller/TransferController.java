@@ -42,6 +42,8 @@ public class TransferController {
                 && notSameAccount(transfer, currentAccountHolder(principal))
                 && isAccount(transfer)) {
             transfer.setAccountFromId(currentAccountHolder(principal).getAccountId());
+            transfer.setTransferTypeId(TYPE_SEND);
+            transfer.setTransferType(getTransferTypeAsString(TYPE_SEND));
             transfer.setTransferStatusId(STATUS_APPROVED);
             transfer.setTransferStatus(getTransferStatusAsString(STATUS_APPROVED));
             transferDao.sendFunds(transfer);
@@ -52,17 +54,24 @@ public class TransferController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/send/request", method = RequestMethod.POST)
-    public boolean sendRequest(@Valid @RequestBody Transfer transfer) {
-        transfer.setTransferTypeId(TYPE_REQUEST);
-        transfer.setTransferType(getTransferTypeAsString(TYPE_REQUEST));
-        transfer.setTransferStatusId(STATUS_PENDING);
-        transfer.setTransferStatus(getTransferStatusAsString(STATUS_PENDING));
-        return transferDao.initiateTransfer(transfer);
+    public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
+        boolean success = false;
+        if (notSameAccount(transfer, currentAccountHolder(principal))
+                && isAccount(transfer)) {
+            transfer.setAccountToId(currentAccountHolder(principal).getAccountId());
+            transfer.setTransferTypeId(TYPE_REQUEST);
+            transfer.setTransferType(getTransferTypeAsString(TYPE_REQUEST));
+            transfer.setTransferStatusId(STATUS_PENDING);
+            transfer.setTransferStatus(getTransferStatusAsString(STATUS_PENDING));
+            transferDao.initiateTransfer(transfer);
+            success = true;
+        }
+        return success;
     }
 
     @RequestMapping(path = "/list", method = RequestMethod.GET)
     public List<Transfer> getListOfTransfers(Principal principal) {
-        int accountId = currentAccountHolder(principal).getAccountId();
+        int accountId = currentAccountHolder(principal).getAccountId();1
         return transferDao.listAllTransfers(accountId);
     }
 
