@@ -3,7 +3,9 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountHolderDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.exceptions.InvalidAccountNumber;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
+import com.techelevator.tenmo.exceptions.InvalidUserId;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +41,8 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
-    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException,
+            InvalidAccountNumber, InvalidUserId {
         boolean success = false;
         if (hasEnoughMoney(transfer, currentAccountHolder(principal))
                 && notSameAccount(transfer, currentAccountHolder(principal))
@@ -59,7 +62,8 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/send/request", method = RequestMethod.POST)
-    public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException {
+    public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException,
+            InvalidAccountNumber, InvalidUserId {
         boolean success = false;
         if (notSameAccount(transfer, currentAccountHolder(principal))
                 && isAccount(transfer)) {
@@ -88,7 +92,8 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/accept", method = RequestMethod.PUT)
-    public boolean acceptRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException{
+    public boolean acceptRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException
+            , InvalidAccountNumber, InvalidUserId {
         boolean success = false;
         if (hasEnoughMoney(transfer, currentAccountHolder(principal))
                 && notSameAccount(transfer, currentAccountHolder(principal))
@@ -104,12 +109,12 @@ public class TransferController {
     @ApiOperation("Gets A List Of Transfers")
     @ApiParam
     @RequestMapping(path = "/list", method = RequestMethod.GET)
-    public List<Transfer> getListOfTransfers(Principal principal) {
+    public List<Transfer> getListOfTransfers(Principal principal) throws InvalidUserId {
         int accountId = currentAccountHolder(principal).getAccountId();
         return transferDao.listAllTransfers(accountId);
     }
 
-    public AccountHolder currentAccountHolder(Principal principal) {
+    public AccountHolder currentAccountHolder(Principal principal) throws InvalidUserId {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         AccountHolder currentAccountHolder = accountHolderDao.getAccountHolderByUserId(currentUserId);
         return currentAccountHolder;
@@ -123,7 +128,7 @@ public class TransferController {
         return currentAccountHolder.getAccountId() != transfer.getAccountToId();
     }
 
-    public boolean isAccount(Transfer transfer) {
+    public boolean isAccount(Transfer transfer) throws InvalidAccountNumber {
         return accountHolderDao.getAccountHolderByAccountId(transfer.getAccountToId()) != null;
     }
 
