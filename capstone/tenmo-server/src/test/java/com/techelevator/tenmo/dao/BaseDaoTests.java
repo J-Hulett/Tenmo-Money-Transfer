@@ -18,7 +18,7 @@ public abstract class BaseDaoTests {
     protected DataSource dataSource;
 
     @After
-    public void rollback() throws SQLException{
+    public void rollback() throws SQLException {
         dataSource.getConnection().rollback();
     }
 

@@ -8,8 +8,7 @@ import com.techelevator.tenmo.services.AccountHolderService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
-import com.techelevator.util.BasicLogger;
-import com.techelevator.util.TransferNotAllowedException;
+import com.techelevator.util.*;
 
 import java.math.BigDecimal;
 
@@ -101,8 +100,7 @@ public class App {
     }
 
     private void viewCurrentBalance() {
-        int userId = Math.toIntExact(currentUser.getUser().getId());
-        System.out.println(consoleService.printBalance(userId, accountHolderService));
+        System.out.println(consoleService.printBalance(accountHolderService));
     }
 
     private void viewTransferHistory() {
@@ -118,49 +116,67 @@ public class App {
         } else {
             consoleService.printTransferDetail(transferId, transferService, accountHolderService);
         }
-
     }
 
     private void viewPendingRequests() {
         int selectedOption = -1;
+        int transferId = -1;
         boolean success = false;
         consoleService.printRequestList(transferService.getTransferList(), accountHolderService);
-        int transferId = consoleService.promptForTransferIdToApproveOrReject();
-        if (transferId == 0) {
-            mainMenu();
-        } else if (transferService.getTransferById(transferId) == null) {
-            System.out.println();
-            System.out.println("Invalid Transfer ID, please try again!");
-            System.out.println();
-            viewPendingRequests();
-        } else if (transferService.getTransferById(transferId).getAccountFromId() != accountHolderService.getCurrentAccountHolder().getAccountId()) {
-            System.out.println();
-            System.out.println("Invalid Transfer Selection, please try again!");
-            System.out.println();
-            viewPendingRequests();
-        } else if (transferService.getTransferById(transferId).getTransferStatusId() != ConsoleService.PENDING) {
-            System.out.println();
-            System.out.println("Transfer Already Completed!");
-            System.out.println();
-        } else {
-            consoleService.printApproveOrRejectTransferOption();
-            selectedOption = consoleService.promptForApproveOrReject();
-            success = transferService.acceptOrRejectRequest(selectedOption, transferId);
-        }
-        if (success) {
-            if (selectedOption == 1 || selectedOption == 2) {
-                System.out.println();
-                System.out.println("Status Updated!");
-                System.out.println();
+            try {
+                transferId = consoleService.promptForTransferIdToApproveOrReject();
+                if (transferId == 0) {
+                    mainMenu();
+                } else if (transferService.getTransferById(transferId) == null) {
+                    throw new TransferNotAllowedException();
+                } else if (transferService.getTransferById(transferId).getAccountFromId() != accountHolderService.getCurrentAccountHolder().getAccountId()) {
+                    throw new TransferNotAllowedException();
+                } else if (transferService.getTransferById(transferId).getTransferStatusId() != ConsoleService.PENDING) {
+                    throw new TransferNotAllowedException();
+                }
+            }catch(TransferNotAllowedException e){
+                consoleService.printErrorMessage();
+                BasicLogger.log(e.getMessage());
+                viewPendingRequests();
             }
-            mainMenu();
-        }
-
+            consoleService.printApproveOrRejectTransferOption();
+            try {
+                selectedOption = consoleService.promptForApproveOrReject();
+                success = transferService.acceptOrRejectRequest(selectedOption, transferId);
+                if (success) {
+                    if (selectedOption == 1 || selectedOption == 2) {
+                        System.out.println();
+                        System.out.println("Status Updated!");
+                        System.out.println();
+                    }
+                    mainMenu();
+                } else if(!success && selectedOption == 1){
+                    throw new InsufficientFundsException();
+                }
+            } catch (InsufficientFundsException e){
+                consoleService.printErrorMessage();
+                System.out.println(e.getMessage());
+                BasicLogger.log(e.getMessage());
+            }
     }
+
 
     private void sendBucks() {
         consoleService.listContacts(accountHolderService.getContactList());
-        int userIdToSend = consoleService.promptForUserIdToSendTo();
+        int userIdToSend = 0;
+        try{
+            userIdToSend = consoleService.promptForUserIdToSendTo();
+            if (userIdToSend == 0){
+                mainMenu();
+            } else if(userIdToSend == accountHolderService.getCurrentAccountHolder().getUserId()){
+                throw new InvalidContactException();
+            }
+        } catch (InvalidContactException e){
+            BasicLogger.log(e.getMessage());
+            consoleService.printErrorMessage();
+            System.exit(1);
+        }
+
         BigDecimal transferAmount = consoleService.promptForTransferAmount();
 
         try {
@@ -176,12 +192,25 @@ public class App {
 
     private void requestBucks() {
         consoleService.listContacts(accountHolderService.getContactList());
-        int userToRequest = consoleService.promptForUserIdToRequestFrom();
+        int userIdToRequest = 0;
+        try{
+            userIdToRequest = consoleService.promptForUserIdToRequestFrom();
+            if(userIdToRequest == 0){
+                mainMenu();
+            } else if(userIdToRequest == accountHolderService.getCurrentAccountHolder().getUserId()){
+                throw new InvalidContactException();
+            }
+        }catch (InvalidContactException e){
+            BasicLogger.log(e.getMessage());
+            consoleService.printErrorMessage();
+            System.exit(1);
+        }
+
         BigDecimal requestAmount = consoleService.promptForTransferAmount();
 
         try {
-            boolean succes = transferService.sendingRequest(requestAmount, userToRequest);
-            if (!succes) {
+            boolean success = transferService.sendingRequest(requestAmount, userIdToRequest);
+            if (!success) {
                 throw new TransferNotAllowedException();
             }
         } catch (TransferNotAllowedException e) {

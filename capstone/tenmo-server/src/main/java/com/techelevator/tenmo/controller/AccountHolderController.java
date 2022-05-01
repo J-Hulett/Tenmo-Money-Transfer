@@ -2,7 +2,6 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountHolderDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
-import com.techelevator.tenmo.exceptions.InvalidUserId;
 import com.techelevator.tenmo.model.AccountHolder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,7 +27,7 @@ public class AccountHolderController {
     @ApiOperation("Get Current Account Holder")
     @ApiParam
     @RequestMapping(path = "/activeHolder", method = RequestMethod.GET)
-    public AccountHolder getCurrentAccountHolder(Principal principal) throws InvalidUserId {
+    public AccountHolder getCurrentAccountHolder(Principal principal) {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         return accountHolderDao.getAccountHolderByUserId(currentUserId);
     }
@@ -36,7 +35,7 @@ public class AccountHolderController {
     @ApiOperation("Get List Of Other Account Holders - Contacts")
     @ApiParam
     @RequestMapping(path = "/contacts", method = RequestMethod.GET)
-    public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(Principal principal) throws InvalidUserId{
+    public List<AccountHolder> getListOfOtherAccountHoldersNotAtUserId(Principal principal) {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         return accountHolderDao.getListOfOtherAccountHoldersByUserId(currentUserId);
     }

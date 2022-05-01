@@ -5,6 +5,7 @@ import com.techelevator.tenmo.App;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.util.InvalidContactException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -122,7 +123,7 @@ public class ConsoleService {
         System.out.println(transferService.getTransferById(transferId).toString(accountHolderService));
     }
 
-    public void printApproveOrRejectTransferOption(){
+    public void printApproveOrRejectTransferOption() {
         System.out.println("-------------------------------------------");
         System.out.println("1: Approve");
         System.out.println("2: Reject");
@@ -141,12 +142,12 @@ public class ConsoleService {
         }
     }
 
-    public int promptForApproveOrReject(){
+    public int promptForApproveOrReject() {
         String userSelection = "Please choose an option:";
         return promptForInt(userSelection);
     }
 
-    public int promptUserForTransferId(){
+    public int promptUserForTransferId() {
         String transferId = "Please enter transfer ID to view details (0 to cancel): ";
         return promptForInt(transferId);
     }
@@ -182,7 +183,7 @@ public class ConsoleService {
         }
     }
 
-    public String printBalance(int userId, AccountHolderService accountHolderService) {
+    public String printBalance(AccountHolderService accountHolderService) {
         return accountHolderService.getCurrentAccountHolder().getHolderBalance();
 
     }
@@ -193,7 +194,9 @@ public class ConsoleService {
     }
 
     public void printErrorMessage() {
+        System.out.println();
         System.out.println("An error occurred. Check the log for details.");
+        System.out.println();
     }
 
 }

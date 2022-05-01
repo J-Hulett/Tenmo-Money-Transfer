@@ -54,7 +54,6 @@ public class Transfer {
             return transferId + "          " + toOrFrom + " " + nameOnAccount + "          $ " + transferAmount;
         } else
             return transferId + "          " + nameOnAccount + "                 $ " + transferAmount;
-
     }
 
     public String toString(AccountHolderService accountHolderService) {
@@ -64,7 +63,6 @@ public class Transfer {
                 "Type: " + transferType + "\n" +
                 "Status: " + transferStatus + "\n" +
                 "Amount: $" + transferAmount;
-
     }
 
     public int getTransferTypeId() {

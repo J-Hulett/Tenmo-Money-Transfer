@@ -33,20 +33,20 @@ public class TestingDatabaseConfig {
     private JdbcTemplate adminJdbcTemplate;
 
     @PostConstruct
-    public void setup(){
-        if (System.getenv("DB_HOST") == null){
+    public void setup() {
+        if (System.getenv("DB_HOST") == null) {
             adminDataSource = new SingleConnectionDataSource();
             adminDataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
             adminDataSource.setUsername("postgres");
             adminDataSource.setPassword("postgres1");
             adminJdbcTemplate = new JdbcTemplate(adminDataSource);
             adminJdbcTemplate.update("DROP DATABASE IF EXISTS \"" + DB_NAME + "\";");
-            adminJdbcTemplate.update("CREATE DATABASE \"" + DB_NAME +"\";");
+            adminJdbcTemplate.update("CREATE DATABASE \"" + DB_NAME + "\";");
         }
     }
 
     @Bean
-    public DataSource dataSource() throws SQLException{
+    public DataSource dataSource() throws SQLException {
         SingleConnectionDataSource dataSource = new SingleConnectionDataSource();
         dataSource.setUrl(String.format("jdbc:postgresql://%s:%s/%s", DB_HOST, DB_PORT, DB_NAME));
         dataSource.setUsername(DB_USER);
@@ -59,9 +59,9 @@ public class TestingDatabaseConfig {
     }
 
     @PreDestroy
-    public void cleanup(){
-        if(adminDataSource != null){
-            adminJdbcTemplate.update("DROP DATABASE \""+ DB_NAME + "\";");
+    public void cleanup() {
+        if (adminDataSource != null) {
+            adminJdbcTemplate.update("DROP DATABASE \"" + DB_NAME + "\";");
             adminDataSource.destroy();
         }
     }

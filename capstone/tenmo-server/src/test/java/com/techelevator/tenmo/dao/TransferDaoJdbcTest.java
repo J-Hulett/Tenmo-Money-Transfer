@@ -1,7 +1,7 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.exceptions.InvalidAccountNumber;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
+import com.techelevator.tenmo.exceptions.ServerSideSQLError;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import org.junit.After;
@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class TransferDaoJdbcTest extends BaseDaoTests {
 
     private TransferDaoJdbc sut;
@@ -23,6 +21,10 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     Transfer testTransfer2;
     Transfer testTransfer3;
     List<Transfer> testList;
+
+    /**
+     * DataSource Needs to be Commented to Run Server and Uncommented to Run tests.
+     */
 
     @Before
     public void setUp() throws Exception {
@@ -55,6 +57,9 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
         Assert.assertEquals(expectedSize, actual.size());
     }
 
+    /**
+     * Must Be Run Solo - Other tests add another User To list
+     */
     @Test
     public void list_All_Transfers_For_Current_User_2001_Has_Size_4() {
         int expectedSize = 4;
@@ -65,6 +70,9 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
         Assert.assertEquals(expectedSize, actual.size());
     }
 
+    /**
+     * Must Be Run Solo - Other tests add another User To list
+     */
     @Test
     public void list_All_Transfers_For_Current_User_2002_Has_Size_7() {
         int expectedSize = 7;
@@ -76,7 +84,7 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     }
 
     @Test
-    public void initiate_Transfer_Returns_New_Transfer() throws InvalidTransferException {
+    public void initiate_Transfer_Returns_New_Transfer() {
         int expectedTransferId = testTransfer1.getTransferId();
         int expectedTransferTypeId = testTransfer1.getTransferTypeId();
         String expectedTransferType = testTransfer1.getTransferType();
@@ -100,7 +108,7 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     }
 
     @Test
-    public void send_Funds_Inserts_A_New_Transfer() throws InvalidTransferException {
+    public void send_Funds_Inserts_A_New_Transfer() {
         int expectedTransferId = testTransfer1.getTransferId();
         int expectedTransferTypeId = testTransfer1.getTransferTypeId();
         String expectedTransferType = testTransfer1.getTransferType();
@@ -124,7 +132,7 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     }
 
     @Test
-    public void send_Funds_Updates_Balance_For_Both_Accounts() throws InvalidTransferException, InvalidAccountNumber {
+    public void send_Funds_Updates_Balance_For_Both_Accounts() {
         AccountHolder accountTo = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountToId());
         AccountHolder accountFrom = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountFromId());
 
@@ -168,7 +176,7 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     }
 
     @Test
-    public void accept_Transfer_Updates_Existing_Transfer_To_Accepted_Status() throws InvalidTransferException {
+    public void accept_Transfer_Updates_Existing_Transfer_To_Accepted_Status() {
         int expectedTransferId = testTransfer2.getTransferId();
         int expectedTransferTypeId = testTransfer2.getTransferTypeId();
         String expectedTransferType = testTransfer2.getTransferType();
@@ -192,7 +200,7 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
     }
 
     @Test
-    public void accept_Transfer_Updates_Balance_Of_Both_Accounts() throws InvalidTransferException, InvalidAccountNumber {
+    public void accept_Transfer_Updates_Balance_Of_Both_Accounts() {
         AccountHolder accountTo = accountHolderSut.getAccountHolderByAccountId(testTransfer2.getAccountToId());
         AccountHolder accountFrom = accountHolderSut.getAccountHolderByAccountId(testTransfer2.getAccountFromId());
 

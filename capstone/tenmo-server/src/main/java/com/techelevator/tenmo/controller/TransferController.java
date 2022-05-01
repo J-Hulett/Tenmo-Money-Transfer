@@ -3,9 +3,8 @@ package com.techelevator.tenmo.controller;
 import com.techelevator.tenmo.dao.AccountHolderDao;
 import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
-import com.techelevator.tenmo.exceptions.InvalidAccountNumber;
 import com.techelevator.tenmo.exceptions.InvalidTransferException;
-import com.techelevator.tenmo.exceptions.InvalidUserId;
+import com.techelevator.tenmo.exceptions.ServerSideSQLError;
 import com.techelevator.tenmo.model.AccountHolder;
 import com.techelevator.tenmo.model.Transfer;
 import io.swagger.annotations.ApiOperation;
@@ -37,12 +36,12 @@ public class TransferController {
         this.transferDao = transferDao;
         this.jdbcUserDao = jdbcUserDao;
     }
+
     @ApiOperation("Sends Funds From One User To Another")
     @ApiParam
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path = "/send", method = RequestMethod.POST)
-    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException,
-            InvalidAccountNumber, InvalidUserId {
+    public boolean sendFunds(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException, ServerSideSQLError {
         boolean success = false;
         if (hasEnoughMoney(transfer, currentAccountHolder(principal))
                 && notSameAccount(transfer, currentAccountHolder(principal))
@@ -62,8 +61,7 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/send/request", method = RequestMethod.POST)
-    public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException,
-            InvalidAccountNumber, InvalidUserId {
+    public boolean sendRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException, ServerSideSQLError {
         boolean success = false;
         if (notSameAccount(transfer, currentAccountHolder(principal))
                 && isAccount(transfer)) {
@@ -82,7 +80,7 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/reject", method = RequestMethod.PUT)
-    public boolean rejectRequest(@Valid @RequestBody Transfer transfer){
+    public boolean rejectRequest(@Valid @RequestBody Transfer transfer) {
         transfer.setTransferStatusId(STATUS_REJECTED);
         transfer.setTransferStatus(getTransferStatusAsString(STATUS_REJECTED));
         return transferDao.rejectTransfer(transfer);
@@ -92,8 +90,7 @@ public class TransferController {
     @ApiParam
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/accept", method = RequestMethod.PUT)
-    public boolean acceptRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException
-            , InvalidAccountNumber, InvalidUserId {
+    public boolean acceptRequest(@Valid @RequestBody Transfer transfer, Principal principal) throws InvalidTransferException, ServerSideSQLError {
         boolean success = false;
         if (hasEnoughMoney(transfer, currentAccountHolder(principal))
                 && notSameAccount(transfer, currentAccountHolder(principal))
@@ -109,12 +106,12 @@ public class TransferController {
     @ApiOperation("Gets A List Of Transfers")
     @ApiParam
     @RequestMapping(path = "/list", method = RequestMethod.GET)
-    public List<Transfer> getListOfTransfers(Principal principal) throws InvalidUserId {
+    public List<Transfer> getListOfTransfers(Principal principal) {
         int accountId = currentAccountHolder(principal).getAccountId();
         return transferDao.listAllTransfers(accountId);
     }
 
-    public AccountHolder currentAccountHolder(Principal principal) throws InvalidUserId {
+    public AccountHolder currentAccountHolder(Principal principal) {
         int currentUserId = jdbcUserDao.findIdByUsername(principal.getName());
         AccountHolder currentAccountHolder = accountHolderDao.getAccountHolderByUserId(currentUserId);
         return currentAccountHolder;
@@ -128,11 +125,11 @@ public class TransferController {
         return currentAccountHolder.getAccountId() != transfer.getAccountToId();
     }
 
-    public boolean isAccount(Transfer transfer) throws InvalidAccountNumber {
+    public boolean isAccount(Transfer transfer) {
         return accountHolderDao.getAccountHolderByAccountId(transfer.getAccountToId()) != null;
     }
 
-    public String getTransferStatusAsString(int statusId) {  //might need another model
+    public String getTransferStatusAsString(int statusId) {
         if (statusId == 1) {
             return "Pending";
         } else if (statusId == 2) {

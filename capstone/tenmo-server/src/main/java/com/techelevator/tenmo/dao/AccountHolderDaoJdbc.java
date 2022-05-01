@@ -1,14 +1,11 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.exceptions.InvalidAccountNumber;
-import com.techelevator.tenmo.exceptions.InvalidUserId;
 import com.techelevator.tenmo.model.AccountHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +18,14 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    //public AccountHolderDaoJdbc(DataSource dataSource){
-//        this.jdbcTemplate = new JdbcTemplate(dataSource);
-//    }
+    /**
+     * DataSource Needs to be Commented to Run Server and Uncommented to Run tests.
+     */
+
+//    public AccountHolderDaoJdbc(DataSource dataSource){this.jdbcTemplate = new JdbcTemplate(dataSource);}
 
     @Override
-    public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) throws InvalidUserId{
+    public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) {
         List<AccountHolder> accountHolders = new ArrayList<>();
 
         String sql = "SELECT * " +
@@ -44,7 +43,7 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
     }
 
     @Override
-    public AccountHolder getAccountHolderByAccountId(int accountId) throws InvalidAccountNumber {
+    public AccountHolder getAccountHolderByAccountId(int accountId) {
         AccountHolder accountHolder = new AccountHolder();
         String sql = "SELECT * " +
                 "FROM account " +
@@ -60,7 +59,7 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
     }
 
     @Override
-    public AccountHolder getAccountHolderByUserId(int userId) throws InvalidUserId {
+    public AccountHolder getAccountHolderByUserId(int userId) {
         AccountHolder accountHolder = new AccountHolder();
         String sql = "SELECT * " +
                 "FROM account " +
@@ -82,5 +81,4 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
         accountHolder.setUserId(rowSet.getInt("user_id"));
         return accountHolder;
     }
-
 }
