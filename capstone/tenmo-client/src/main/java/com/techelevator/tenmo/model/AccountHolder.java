@@ -14,6 +14,13 @@ public class AccountHolder {
     public AccountHolder() {
     }
 
+    public AccountHolder(String username, int accountId, BigDecimal balance, int userId) {
+        this.username = username;
+        this.accountId = accountId;
+        this.balance = balance;
+        this.userId = userId;
+    }
+
     public String getHolderBalance(){
         return "Your current account balance: $" + balance.toString();
     }
