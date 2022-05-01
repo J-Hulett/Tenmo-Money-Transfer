@@ -1,10 +1,13 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exceptions.InvalidAccountNumber;
+import com.techelevator.tenmo.exceptions.InvalidUserId;
 import com.techelevator.tenmo.model.AccountHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +21,12 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public AccountHolderDaoJdbc(DataSource dataSource){
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
     @Override
-    public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) {
+    public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) throws InvalidUserId{
         List<AccountHolder> accountHolders = new ArrayList<>();
 
         String sql = "SELECT * " +
@@ -37,7 +44,7 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
     }
 
     @Override
-    public AccountHolder getAccountHolderByAccountId(int accountId) {
+    public AccountHolder getAccountHolderByAccountId(int accountId) throws InvalidAccountNumber {
         AccountHolder accountHolder = new AccountHolder();
         String sql = "SELECT * " +
                 "FROM account " +
@@ -53,7 +60,7 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
     }
 
     @Override
-    public AccountHolder getAccountHolderByUserId(int userId) {
+    public AccountHolder getAccountHolderByUserId(int userId) throws InvalidUserId {
         AccountHolder accountHolder = new AccountHolder();
         String sql = "SELECT * " +
                 "FROM account " +
