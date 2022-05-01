@@ -73,5 +73,4 @@ public class TransferTest {
         Assert.assertEquals("Incorrect Username!",expected, actual);
     }
 
-
 }

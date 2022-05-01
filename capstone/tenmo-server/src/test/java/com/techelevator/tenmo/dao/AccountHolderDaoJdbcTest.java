@@ -25,7 +25,7 @@ public class AccountHolderDaoJdbcTest extends BaseDaoTests{
 
     @Before
     public void setup() throws Exception {
-        sut = new AccountHolderDaoJdbc(dataSource);
+      //  sut = new AccountHolderDaoJdbc(dataSource);
         accountHolderA = new AccountHolder("UserA", 2001, new BigDecimal("1000.00"), 1001);
         accountHolderB = new AccountHolder("UserB", 2002, new BigDecimal("1000.00"), 1002);
         accountHolderC = new AccountHolder("UserC", 2003, new BigDecimal("1000.00"), 1003);

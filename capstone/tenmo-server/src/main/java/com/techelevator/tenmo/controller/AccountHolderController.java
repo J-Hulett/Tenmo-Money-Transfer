@@ -9,8 +9,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.security.AccessController;
 import java.security.Principal;
 import java.util.List;
 

@@ -21,9 +21,9 @@ public class AccountHolderDaoJdbc implements AccountHolderDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public AccountHolderDaoJdbc(DataSource dataSource){
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    //public AccountHolderDaoJdbc(DataSource dataSource){
+//        this.jdbcTemplate = new JdbcTemplate(dataSource);
+//    }
 
     @Override
     public List<AccountHolder> getListOfOtherAccountHoldersByUserId(int userId) throws InvalidUserId{

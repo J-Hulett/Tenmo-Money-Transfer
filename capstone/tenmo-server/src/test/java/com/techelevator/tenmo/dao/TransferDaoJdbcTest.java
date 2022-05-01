@@ -26,8 +26,8 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
 
     @Before
     public void setUp() throws Exception {
-        sut = new TransferDaoJdbc(dataSource);
-        accountHolderSut = new AccountHolderDaoJdbc(dataSource);
+//        sut = new TransferDaoJdbc(dataSource);
+//        accountHolderSut = new AccountHolderDaoJdbc(dataSource);
         testTransfer1 = new Transfer(3009, 2, "Send", 2,
                 "Approved", 2002, 2001, new BigDecimal("25.00"));
         testTransfer2 = new Transfer(3004, 1, "Request", 2,
@@ -43,6 +43,36 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void list_All_Transfers_For_Current_User_2003_Has_Size_5() {
+        int expectedSize = 5;
+        int currentUserAccount = 2003;
+
+        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
+
+        Assert.assertEquals(expectedSize, actual.size());
+    }
+
+    @Test
+    public void list_All_Transfers_For_Current_User_2001_Has_Size_4() {
+        int expectedSize = 4;
+        int currentUserAccount = 2001;
+
+        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
+
+        Assert.assertEquals(expectedSize, actual.size());
+    }
+
+    @Test
+    public void list_All_Transfers_For_Current_User_2002_Has_Size_7() {
+        int expectedSize = 7;
+        int currentUserAccount = 2002;
+
+        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
+
+        Assert.assertEquals(expectedSize, actual.size());
     }
 
     @Test
@@ -67,6 +97,50 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
         Assert.assertEquals(expectedAccountToId, actual.getAccountToId());
         Assert.assertEquals(expectedAccountFromId, actual.getAccountFromId());
         Assert.assertEquals(expectedAmount, actual.getTransferAmount());
+    }
+
+    @Test
+    public void send_Funds_Inserts_A_New_Transfer() throws InvalidTransferException {
+        int expectedTransferId = testTransfer1.getTransferId();
+        int expectedTransferTypeId = testTransfer1.getTransferTypeId();
+        String expectedTransferType = testTransfer1.getTransferType();
+        int expectedTransferStatusId = testTransfer1.getTransferStatusId();
+        String expectedTransferStatus = testTransfer1.getTransferStatus();
+        int expectedAccountToId = testTransfer1.getAccountToId();
+        int expectedAccountFromId = testTransfer1.getAccountFromId();
+        BigDecimal expectedAmount = testTransfer1.getTransferAmount();
+
+        sut.sendFunds(testTransfer1);
+        Transfer actual = sut.getTransferById(testTransfer1.getTransferId());
+
+        Assert.assertEquals(expectedTransferId, actual.getTransferId());
+        Assert.assertEquals(expectedTransferTypeId, actual.getTransferTypeId());
+        Assert.assertEquals(expectedTransferType, actual.getTransferType());
+        Assert.assertEquals(expectedTransferStatusId, actual.getTransferStatusId());
+        Assert.assertEquals(expectedTransferStatus, actual.getTransferStatus());
+        Assert.assertEquals(expectedAccountToId, actual.getAccountToId());
+        Assert.assertEquals(expectedAccountFromId, actual.getAccountFromId());
+        Assert.assertEquals(expectedAmount, actual.getTransferAmount());
+    }
+
+    @Test
+    public void send_Funds_Updates_Balance_For_Both_Accounts() throws InvalidTransferException, InvalidAccountNumber {
+        AccountHolder accountTo = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountToId());
+        AccountHolder accountFrom = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountFromId());
+
+        BigDecimal expectedToBalance = accountTo.getBalance().add(testTransfer1.getTransferAmount());
+        BigDecimal expectedFromBalance = accountFrom.getBalance().subtract(testTransfer1.getTransferAmount());
+
+        sut.sendFunds(testTransfer1);
+
+        accountTo = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountToId());
+        accountFrom = accountHolderSut.getAccountHolderByAccountId(testTransfer1.getAccountFromId());
+
+        BigDecimal accountToBalance = accountTo.getBalance();
+        BigDecimal accountFromBalance = accountFrom.getBalance();
+
+        Assert.assertEquals(expectedToBalance, accountToBalance);
+        Assert.assertEquals(expectedFromBalance, accountFromBalance);
     }
 
     @Test
@@ -129,42 +203,11 @@ public class TransferDaoJdbcTest extends BaseDaoTests {
 
         accountTo = accountHolderSut.getAccountHolderByAccountId(testTransfer2.getAccountToId());
         accountFrom = accountHolderSut.getAccountHolderByAccountId(testTransfer2.getAccountFromId());
-        
+
         BigDecimal accountToBalance = accountTo.getBalance();
         BigDecimal accountFromBalance = accountFrom.getBalance();
 
         Assert.assertEquals(expectedToBalance, accountToBalance);
         Assert.assertEquals(expectedFromBalance, accountFromBalance);
     }
-
-    @Test
-    public void list_All_Transfers_For_Current_User_2003_Has_Size_5() {
-        int expectedSize = 5;
-        int currentUserAccount = 2003;
-
-        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
-
-        Assert.assertEquals(expectedSize, actual.size());
-    }
-
-    @Test
-    public void list_All_Transfers_For_Current_User_2001_Has_Size_4() {
-        int expectedSize = 4;
-        int currentUserAccount = 2001;
-
-        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
-
-        Assert.assertEquals(expectedSize, actual.size());
-    }
-
-    @Test
-    public void list_All_Transfers_For_Current_User_2002_Has_Size_7() {
-        int expectedSize = 7;
-        int currentUserAccount = 2002;
-
-        List<Transfer> actual = sut.listAllTransfers(currentUserAccount);
-
-        Assert.assertEquals(expectedSize, actual.size());
-    }
-
 }

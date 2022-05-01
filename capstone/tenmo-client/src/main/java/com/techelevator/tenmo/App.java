@@ -107,20 +107,55 @@ public class App {
 
     private void viewTransferHistory() {
         consoleService.printTransferList(transferService.getTransferList(), accountHolderService);
-        int transferId =  consoleService.promptUserForTransferId();
-        consoleService.printTransferDetail(transferId,transferService,accountHolderService);
+        int transferId = consoleService.promptUserForTransferId();
+        if (transferId == 0) {
+            mainMenu();
+        } else if (transferService.getTransferById(transferId) == null) {
+            System.out.println();
+            System.out.println("Invalid Transfer ID, please try again!");
+            System.out.println();
+            viewTransferHistory();
+        } else {
+            consoleService.printTransferDetail(transferId, transferService, accountHolderService);
+        }
+
     }
 
     private void viewPendingRequests() {
+        int selectedOption = -1;
+        boolean success = false;
         consoleService.printRequestList(transferService.getTransferList(), accountHolderService);
         int transferId = consoleService.promptForTransferIdToApproveOrReject();
-        consoleService.printApproveOrRejectTransferOption();
-        int selectedOption = consoleService.promptForApproveOrReject();
-       boolean success = transferService.acceptOrRejectRequest(selectedOption, transferId);
-      // Put break point here to see if success is false;
-       if(success){
-           System.out.println("IT WORKED!!!!!!!");
-       }
+        if (transferId == 0) {
+            mainMenu();
+        } else if (transferService.getTransferById(transferId) == null) {
+            System.out.println();
+            System.out.println("Invalid Transfer ID, please try again!");
+            System.out.println();
+            viewPendingRequests();
+        } else if (transferService.getTransferById(transferId).getAccountFromId() != accountHolderService.getCurrentAccountHolder().getAccountId()) {
+            System.out.println();
+            System.out.println("Invalid Transfer Selection, please try again!");
+            System.out.println();
+            viewPendingRequests();
+        } else if (transferService.getTransferById(transferId).getTransferStatusId() != ConsoleService.PENDING) {
+            System.out.println();
+            System.out.println("Transfer Already Completed!");
+            System.out.println();
+        } else {
+            consoleService.printApproveOrRejectTransferOption();
+            selectedOption = consoleService.promptForApproveOrReject();
+            success = transferService.acceptOrRejectRequest(selectedOption, transferId);
+        }
+        if (success) {
+            if (selectedOption == 1 || selectedOption == 2) {
+                System.out.println();
+                System.out.println("Status Updated!");
+                System.out.println();
+            }
+            mainMenu();
+        }
+
     }
 
     private void sendBucks() {

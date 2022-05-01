@@ -19,9 +19,9 @@ public class TransferDaoJdbc implements TransferDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public TransferDaoJdbc(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+//    public TransferDaoJdbc(DataSource dataSource) {
+//        this.jdbcTemplate = new JdbcTemplate(dataSource);
+//    }
 
     @Override
     public boolean initiateTransfer(Transfer transfer) throws InvalidTransferException{
