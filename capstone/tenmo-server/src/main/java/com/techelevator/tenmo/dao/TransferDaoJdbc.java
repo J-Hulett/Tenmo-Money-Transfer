@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,9 @@ public class TransferDaoJdbc implements TransferDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public TransferDaoJdbc(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
 
     @Override
     public boolean initiateTransfer(Transfer transfer) throws InvalidTransferException{
@@ -73,6 +77,22 @@ public class TransferDaoJdbc implements TransferDao {
             transferList.add(transfer);
         }
         return transferList;
+    }
+
+    @Override
+    public Transfer getTransferById(int transferId) {
+        Transfer transfer = new Transfer();
+
+        String sql = "SELECT * FROM transfer JOIN transfer_status ON transfer_status.transfer_status_id = transfer.transfer_status_id " +
+        "JOIN transfer_type ON transfer.transfer_type_id = transfer_type.transfer_type_id " +
+                "WHERE transfer_id = ?;";
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, transferId);
+
+        if(rowSet.next()) {
+             transfer = mapRowToTransfer(rowSet);
+        }
+        return transfer;
     }
 
     public Transfer mapRowToTransfer(SqlRowSet rowSet) {

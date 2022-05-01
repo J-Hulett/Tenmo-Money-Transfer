@@ -17,4 +17,6 @@ public interface TransferDao {
     boolean acceptTransfer(Transfer transfer) throws InvalidTransferException;
 
     boolean sendFunds(Transfer transfer) throws InvalidTransferException;
+
+    Transfer getTransferById(int transferId);
 }
